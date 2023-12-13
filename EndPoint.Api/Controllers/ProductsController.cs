@@ -29,5 +29,12 @@ namespace EndPoint.Api.Controllers
             var result = await _mediator.Send(createProduct, cancellationToken);
             return Ok(result);
         }
+        [HttpGet,HttpPost("UpdateProduct")]
+        public async Task<IActionResult> UpdateProduct(UpdateProductCommand updateProduct,
+            CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(updateProduct, cancellationToken);
+            return Ok(result);
+        }
     }
 }

@@ -17,4 +17,10 @@ public class Product : BaseEntity
         ManufactureEmail = manufactureEmail;
         IsAvailable = false;
     }
+    public void Edit(string name, string manufacturePhone, string manufactureEmail)
+    {
+        Name = name;
+        ManufacturePhone = manufacturePhone;
+        ManufactureEmail = manufactureEmail;
+    }
 }

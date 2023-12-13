@@ -15,5 +15,6 @@ public class Product : BaseEntity
         Name = name;
         ManufacturePhone = manufacturePhone;
         ManufactureEmail = manufactureEmail;
+        IsAvailable = false;
     }
 }

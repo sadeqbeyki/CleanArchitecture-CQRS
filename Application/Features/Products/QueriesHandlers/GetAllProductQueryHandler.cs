@@ -10,9 +10,7 @@ public class GetAllProductQueryHandler : IRequestHandler<GetAllProductQuery, IEn
     private readonly IProductDbContext _productDbContext;
 
     public GetAllProductQueryHandler(IProductDbContext productDbContext)
-    {
-        _productDbContext = productDbContext;
-    }
+        => _productDbContext = productDbContext;
 
     public async Task<IEnumerable<Product>> Handle(GetAllProductQuery request, CancellationToken cancellationToken)
     {

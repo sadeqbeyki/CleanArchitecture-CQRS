@@ -21,9 +21,4 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Products\Commands\" />
-    <Folder Include="Features\Products\CommandsHandler\" />
-  </ItemGroup>
-
 </Project>

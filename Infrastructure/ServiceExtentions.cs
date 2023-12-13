@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Application.Interface;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistance;
@@ -11,8 +12,9 @@ public static class ServiceExtentions
     {
         services.AddDbContext<ProductDbContext>(options =>
         {
-            options.UseSqlServer("Data Source=localhost;Initial Catalog=NadinTestDB;Integrated Security=True");
+            options.UseSqlServer("Data Source=localhost;Initial Catalog=NadinSoftDB;Integrated Security=True");
         });
+        services.AddScoped<IProductDbContext, ProductDbContext>();
     }
     public static void CreateDatabase(this IApplicationBuilder app)
     {

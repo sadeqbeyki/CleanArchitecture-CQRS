@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistance;
 
@@ -12,5 +13,12 @@ public static class ServiceExtentions
         {
             options.UseSqlServer("Data Source=localhost;Initial Catalog=NadinTestDB;Integrated Security=True");
         });
+    }
+    public static void CreateDatabase(this IApplicationBuilder app)
+    {
+        using var serviceScope = app.ApplicationServices.CreateScope();
+        var dataContext = serviceScope.ServiceProvider.GetRequiredService<ProductDbContext>();
+        dataContext.Database.EnsureCreated();
+        //dataContext.Database.Migrate();
     }
 }

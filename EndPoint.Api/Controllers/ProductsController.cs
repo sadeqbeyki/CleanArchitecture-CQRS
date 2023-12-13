@@ -1,4 +1,5 @@
-﻿using Application.Features.Products.Commands;
+﻿using Application.Exceptions;
+using Application.Features.Products.Commands;
 using Application.Features.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,12 @@ namespace EndPoint.Api.Controllers
             var result = await _mediator.Send(new GetAllProductQuery());
             return Ok(result);
         }
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetProduct(int id)
+        {
+            var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
+            return Ok(result);
+        }
         [HttpPost("CreateProduct")]
         public async Task<IActionResult> CreateProduct(CreateProductCommand createCommand,
             CancellationToken cancellationToken)
@@ -42,15 +49,20 @@ namespace EndPoint.Api.Controllers
                 var result = await _mediator.Send(updateCommand, cancellationToken);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (NotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                // در صورت بروز هر خطای دیگری، خطای سرور داخلی باز می‌گرداند
                 return StatusCode(500, ex.Message);
             }
+        }
+        [HttpDelete("DeleteProduct/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new DeleteProductCommand { Id = id }, cancellationToken);
+            return Ok(result);
         }
     }
 }

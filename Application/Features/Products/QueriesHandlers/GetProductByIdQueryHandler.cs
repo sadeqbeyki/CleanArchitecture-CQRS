@@ -1,4 +1,5 @@
-﻿using Application.Features.Products.Queries;
+﻿using Application.Exceptions;
+using Application.Features.Products.Queries;
 using Application.Interface;
 using Domain.Products;
 using MediatR;
@@ -18,7 +19,7 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
             .Where(p => p.Id == request.Id).FirstOrDefaultAsync();
         if (result == null)
         {
-            throw new Exception("Product not found!");
+            throw new NotFoundException(nameof(Product), request.Id);
         }
         return result;
     }

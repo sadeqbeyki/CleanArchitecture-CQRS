@@ -1,4 +1,5 @@
-﻿using Application.Features.Products.Commands;
+﻿using Application.Exceptions;
+using Application.Features.Products.Commands;
 using Application.Interface;
 using Domain.Products;
 using MediatR;
@@ -27,6 +28,6 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
             await _productDbContext.SaveChangeAsync();
             return product.Id;
         }
-        throw new Exception(nameof(Product));
+        throw new NotFoundException(nameof(Product), request.Id);
     }
 }

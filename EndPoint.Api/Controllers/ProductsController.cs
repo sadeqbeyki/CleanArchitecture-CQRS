@@ -2,6 +2,7 @@
 using Application.Features.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EndPoint.Api.Controllers
 {
@@ -23,18 +24,33 @@ namespace EndPoint.Api.Controllers
             return Ok(result);
         }
         [HttpPost("CreateProduct")]
-        public async Task<IActionResult> CreateProduct(CreateProductCommand createProduct,
+        public async Task<IActionResult> CreateProduct(CreateProductCommand createCommand,
             CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(createProduct, cancellationToken);
+            var result = await _mediator.Send(createCommand, cancellationToken);
             return Ok(result);
         }
         [HttpPut("UpdateProduct/{id}")]
-        public async Task<IActionResult> UpdateProduct(UpdateProductCommand updateProduct,
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductCommand updateCommand,
             CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(updateProduct, cancellationToken);
-            return Ok(result);
+            if (id != updateCommand.Id)
+                return BadRequest();
+
+            try
+            {
+                var result = await _mediator.Send(updateCommand, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // در صورت بروز هر خطای دیگری، خطای سرور داخلی باز می‌گرداند
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

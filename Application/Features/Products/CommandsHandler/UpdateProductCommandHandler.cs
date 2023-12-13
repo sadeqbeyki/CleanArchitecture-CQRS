@@ -27,6 +27,6 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
             await _productDbContext.SaveChangeAsync();
             return product.Id;
         }
-        return default;
+        throw new Exception(nameof(Product));
     }
 }

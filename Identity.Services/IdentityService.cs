@@ -49,15 +49,6 @@ namespace Identity.Services
             }
             return (result.Succeeded, user.Id);
         }
-        public async Task<string> GetUserIdAsync(string userName)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
-            if (user == null)
-            {
-                throw new NotFoundException("User not found");
-            }
-            return await _userManager.GetUserIdAsync(user);
-        }
         public async Task<List<(string id, string fullName, string userName, string email)>> GetAllUsersAsync()
         {
             var users = await _userManager.Users.Select(x => new
@@ -69,6 +60,16 @@ namespace Identity.Services
             }).ToListAsync();
 
             return users.Select(user => (user.Id, user.FullName, user.UserName, user.Email)).ToList();
+        }
+        public async Task<(string userId, string fullName, string UserName, string email, IList<string> roles)> GetUserDetailsRolesAsync(string userId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            return (user.Id, user.FullName, user.UserName, user.Email, roles);
         }
         public async Task<bool> UpdateUserProfile(string id, string fullName, string email, IList<string> roles)
         {
@@ -109,15 +110,14 @@ namespace Identity.Services
             }
             return await _userManager.GetUserNameAsync(user);
         }
-        public async Task<(string userId, string fullName, string UserName, string email, IList<string> roles)> GetUserDetailsAsync(string userId)
+        public async Task<string> GetUserIdAsync(string userName)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
             if (user == null)
             {
                 throw new NotFoundException("User not found");
             }
-            var roles = await _userManager.GetRolesAsync(user);
-            return (user.Id, user.FullName, user.UserName, user.Email, roles);
+            return await _userManager.GetUserIdAsync(user);
         }
         public async Task<(string userId, string fullName, string UserName, string email, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName)
         {

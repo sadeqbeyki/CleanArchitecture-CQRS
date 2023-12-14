@@ -1,15 +1,20 @@
-﻿using Application.Interface;
-using Domain.Products;
+﻿using Domain.Products;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Configurations;
 
 namespace Persistance;
 
+public interface IProductDbContext
+{
+    DbSet<Product> Products { get; set; }
+    Task<int> SaveChangeAsync();
+}
+
 public class ProductDbContext : DbContext, IProductDbContext
 {
     public DbSet<Product> Products { get; set; }
 
-    public ProductDbContext(DbContextOptions options) : base(options)
+    public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options)
     {
     }
 

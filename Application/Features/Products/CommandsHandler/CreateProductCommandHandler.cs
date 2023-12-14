@@ -1,7 +1,7 @@
 ﻿using Application.Features.Products.Commands;
-using Application.Interface;
 using Domain.Products;
 using MediatR;
+using Persistance;
 
 namespace Application.Features.Products.CommandsHandler;
 

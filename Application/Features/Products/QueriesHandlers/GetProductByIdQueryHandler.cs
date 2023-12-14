@@ -1,9 +1,9 @@
 ﻿using Application.Exceptions;
 using Application.Features.Products.Queries;
-using Application.Interface;
 using Domain.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Persistance;
 
 namespace Application.Features.Products.QueriesHandlers;
 public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, Product>

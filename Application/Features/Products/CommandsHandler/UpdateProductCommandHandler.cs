@@ -1,9 +1,9 @@
 ﻿using Application.Exceptions;
 using Application.Features.Products.Commands;
-using Application.Interface;
 using Domain.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Persistance;
 
 namespace Application.Features.Products.CommandsHandler;
 

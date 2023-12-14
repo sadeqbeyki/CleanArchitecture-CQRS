@@ -28,16 +28,15 @@ namespace Identity.Services
 
             if (!result.Succeeded)
             {
-                foreach (var item in result.Errors)
-                {
-                    throw new ValidationException(item.ToString());
-                }
+                var errors = result.Errors.Select(e => e.Description);
+                throw new ValidationException(string.Join("\n", errors));
             }
 
             var addUserRole = await _userManager.AddToRolesAsync(user, roles);
             if (!addUserRole.Succeeded)
             {
-                throw new ValidationException(addUserRole.Errors.ToString());
+                var errors = addUserRole.Errors.Select(e => e.Description);
+                throw new ValidationException(string.Join("\n", errors));
             }
             return (result.Succeeded, user.Id);
         }

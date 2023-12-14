@@ -2,6 +2,6 @@
 
 namespace Identity.Persistance.Identity;
 
-public class ApplicationRole : IdentityRole
+public class ApplicationRole : IdentityRole<string>
 {
 }

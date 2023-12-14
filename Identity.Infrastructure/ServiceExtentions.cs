@@ -13,17 +13,17 @@ public static class ServiceExtentions
     public static void AddIdentityInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDbContext<IdentityDbContext>(option =>
+        services.AddDbContext<AppIdentityDbContext>(option =>
             option.UseSqlServer(configuration.GetConnectionString("IdentityConnection")));
 
-        services.AddScoped<IdentityDbContext>();
+        services.AddScoped<AppIdentityDbContext>();
         services.AddScoped<IIdentityService, IdentityService>();
 
     }
     public static void CreateIdentityDatabase(this IApplicationBuilder app)
     {
         using var serviceScope = app.ApplicationServices.CreateScope();
-        var dataContext = serviceScope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        var dataContext = serviceScope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
         dataContext.Database.EnsureCreated();
         //dataContext.Database.Migrate();
     }

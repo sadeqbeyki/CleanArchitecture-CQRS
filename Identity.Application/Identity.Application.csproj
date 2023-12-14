@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Role\QuerieHandles\" />
-    <Folder Include="Features\Role\Queries\" />
     <Folder Include="Features\User\Queries\" />
     <Folder Include="Features\User\QueryHandlers\" />
   </ItemGroup>

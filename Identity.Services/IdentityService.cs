@@ -71,7 +71,7 @@ namespace Identity.Services
             var roles = await _userManager.GetRolesAsync(user);
             return (user.Id, user.FullName, user.UserName, user.Email, roles);
         }
-        public async Task<bool> UpdateUserProfile(string id, string fullName, string email, IList<string> roles)
+        public async Task<bool> UpdateUser(string id, string fullName, string email, IList<string> roles)
         {
             var user = await _userManager.FindByIdAsync(id);
             user.FullName = fullName;

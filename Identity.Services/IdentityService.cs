@@ -61,7 +61,7 @@ namespace Identity.Services
 
             return users.Select(user => (user.Id, user.FullName, user.UserName, user.Email)).ToList();
         }
-        public async Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsRolesAsync(string userId)
+        public async Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsAsync(string userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)

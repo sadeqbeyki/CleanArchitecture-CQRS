@@ -17,7 +17,7 @@
 
         //User
         Task<(bool isSucceed, string userId)> CreateUserAsync(string userName, string password, string email, string fullName, List<string> roles);
-        Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsRolesAsync(string userId);
+        Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsAsync(string userId);
         Task<List<(string id, string fullName, string userName, string email)>> GetAllUsersAsync();
         Task<bool> UpdateUser(string id, string fullName, string email, IList<string> roles);
         Task<bool> DeleteUserAsync(string userId);

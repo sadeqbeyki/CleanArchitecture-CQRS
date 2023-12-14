@@ -17,7 +17,7 @@ namespace Identity.Application.Features.User.QueryHandlers
         public async Task<UserDetailsResponseDto> Handle(GetUserDetailsQuery request, CancellationToken cancellationToken)
         {
             var (userId, fullName, userName, email, roles) =
-                await _identityService.GetUserDetailsRolesAsync(request.UserId);
+                await _identityService.GetUserDetailsAsync(request.UserId);
             return new UserDetailsResponseDto()
             {
                 Id = userId,

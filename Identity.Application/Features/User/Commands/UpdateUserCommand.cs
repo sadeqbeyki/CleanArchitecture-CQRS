@@ -9,9 +9,9 @@ public class UpdateUserCommand : IRequest<int>
     public List<string> Roles { get; set; }
 }
 
-public record UpdateUserCommands(
-    string id,
-    string fullName,
-    string email,
-    List<string> roles) : IRequest<int>;
+//public record UpdateUserCommands(
+//    string id,
+//    string fullName,
+//    string email,
+//    List<string> roles) : IRequest<int>;
 

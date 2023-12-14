@@ -16,6 +16,13 @@
         Task<bool> UpdateUserProfile(string id, string fullName, string email, IList<string> roles);
         Task<bool> DeleteUserAsync(string userId);
 
+        //user more option
+        Task<string> GetUserNameAsync(string userId);
+        Task<(string userId, string fullName, string UserName, string email, IList<string> roles)> GetUserDetailsAsync(string userId);
+        Task<(string userId, string fullName, string UserName, string email, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName);
+        Task<bool> IsUniqueUserName(string userName);
 
+        //Account
+        Task<bool> SigninUserAsync(string userName, string password);
     }
 }

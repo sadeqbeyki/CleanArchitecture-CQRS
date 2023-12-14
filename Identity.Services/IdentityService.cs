@@ -13,12 +13,16 @@ namespace Identity.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<IdentityRole> _signInManager;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public IdentityService(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityRole> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _signInManager = signInManager;
         }
+
         #region User
         public async Task<(bool isSucceed, string userId)> CreateUserAsync(string userName, string password, string email, string fullName, List<string> roles)
         {
@@ -92,10 +96,52 @@ namespace Identity.Services
             var result = await _userManager.DeleteAsync(user);
             return result.Succeeded;
         }
-
         #endregion
 
+        #region MoreUserOptions
+        public async Task<string> GetUserNameAsync(string userId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+                //throw new Exception("User not found");
+            }
+            return await _userManager.GetUserNameAsync(user);
+        }
+        public async Task<(string userId, string fullName, string UserName, string email, IList<string> roles)> GetUserDetailsAsync(string userId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            return (user.Id, user.FullName, user.UserName, user.Email, roles);
+        }
+        public async Task<(string userId, string fullName, string UserName, string email, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            return (user.Id, user.FullName, user.UserName, user.Email, roles);
+        }
+        public async Task<bool> IsUniqueUserName(string userName)
+        {
+            return await _userManager.FindByNameAsync(userName) == null;
+        }
+        #endregion
 
+        #region Account
+        public async Task<bool> SigninUserAsync(string userName, string password)
+        {
+            var result = await _signInManager.PasswordSignInAsync(userName, password, true, false);
+            return result.Succeeded;
+        }
+        #endregion
         #region Role
         public async Task<bool> CreateRoleAsync(string roleName)
         {

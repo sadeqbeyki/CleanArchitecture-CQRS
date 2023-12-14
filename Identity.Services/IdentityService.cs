@@ -13,10 +13,10 @@ namespace Identity.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly SignInManager<IdentityRole> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public IdentityService(UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager, SignInManager<IdentityRole> signInManager)
+            RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;

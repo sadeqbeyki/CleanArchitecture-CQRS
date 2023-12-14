@@ -142,6 +142,7 @@ namespace Identity.Services
             return result.Succeeded;
         }
         #endregion
+
         #region Role
         public async Task<bool> CreateRoleAsync(string roleName)
         {
@@ -201,5 +202,47 @@ namespace Identity.Services
         }
         #endregion
 
+        #region UserRole
+        public async Task<bool> IsInRoleAsync(string userId, string role)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+            return await _userManager.IsInRoleAsync(user, role);
+        }
+        public async Task<List<string>> GetUserRolesAsync(string userId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.ToList();
+        }
+        public async Task<bool> AssignUserToRole(string userName, IList<string> roles)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var result = await _userManager.AddToRolesAsync(user, roles);
+            return result.Succeeded;
+        }
+        public async Task<bool> UpdateUsersRole(string userName, IList<string> usersRole)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            var result = await _userManager.RemoveFromRolesAsync(user, existingRoles);
+            result = await _userManager.AddToRolesAsync(user, usersRole);
+
+            return result.Succeeded;
+        }
+        #endregion
     }
 }

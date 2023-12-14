@@ -9,12 +9,14 @@ namespace Identity.Services
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public IdentityService(UserManager<ApplicationUser> userManager)
+        public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
-
+        #region User
         public async Task<(bool isSucceed, string userId)> CreateUserAsync(string userName, string password, string email, string fullName, List<string> roles)
         {
             var user = new ApplicationUser()
@@ -40,5 +42,21 @@ namespace Identity.Services
             }
             return (result.Succeeded, user.Id);
         }
+        #endregion
+
+
+        #region Role
+        public async Task<bool> CreateRoleAsync(string roleName)
+        {
+            var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                throw new ValidationException(string.Join("\n", errors));
+            }
+            return result.Succeeded;
+        }
+        #endregion
+
     }
 }

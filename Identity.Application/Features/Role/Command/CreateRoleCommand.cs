@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Identity.Application.Features.Role.Create;
+namespace Identity.Application.Features.Role.Command;
 
 public class CreateRoleCommand : IRequest<int>
 {

@@ -1,10 +1,10 @@
-﻿using Identity.Application.Features.Role.Create;
+﻿using Identity.Application.Features.Role.Command;
 using Identity.Application.Interface;
 using MediatR;
 
-namespace Identity.Application.Features.User.CommandHandlers
+namespace Identity.Application.Features.Role.CommandHandlers
 {
-    public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, int>
+    public sealed class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, int>
     {
         private readonly IIdentityService _identityService;
 

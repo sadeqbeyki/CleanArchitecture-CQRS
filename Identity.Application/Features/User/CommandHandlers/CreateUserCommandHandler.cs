@@ -2,7 +2,7 @@
 using Identity.Application.Interface;
 using MediatR;
 
-namespace Identity.Application.Features.User.QueryHandlers
+namespace Identity.Application.Features.User.CommandHandlers
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
     {

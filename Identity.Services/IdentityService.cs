@@ -1,4 +1,5 @@
-﻿using Identity.Application.Interface;
+﻿using Identity.Application.Common.Exceptions;
+using Identity.Application.Interface;
 using Identity.Persistance.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -88,12 +89,12 @@ namespace Identity.Services
             var roleDetails = await _roleManager.FindByIdAsync(roleId);
             if (roleDetails == null)
             {
-                
+                throw new NotFoundException("Role not found");
             }
 
             if (roleDetails.Name == "Administrator")
             {
-                
+                throw new BadRequestException("You can not delete Administrator Role");
             }
             var result = await _roleManager.DeleteAsync(roleDetails);
             if (!result.Succeeded)

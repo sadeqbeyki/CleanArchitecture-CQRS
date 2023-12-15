@@ -2,6 +2,8 @@
 using Identity.Application.Features.Role.Command;
 using Identity.Application.Features.Role.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +11,8 @@ namespace EndPoint.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RolesController : ControllerBase
     {
         public readonly IMediator _mediator;
@@ -27,7 +31,7 @@ namespace EndPoint.Api.Controllers
 
         [HttpGet("GetAll")]
         [ProducesDefaultResponseType(typeof(List<RoleResponseDto>))]
-        public async Task<IActionResult> GetRoleAsync()
+        public async Task<IActionResult> GetRolesAsync()
         {
             return Ok(await _mediator.Send(new GetRolesQuery()));
         }

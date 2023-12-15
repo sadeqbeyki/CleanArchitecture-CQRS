@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Identity.Application.Features.User.CommandHandlers
 {
-    internal sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, int>
+    public sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, int>
     {
         private readonly IIdentityService _identityService;
 

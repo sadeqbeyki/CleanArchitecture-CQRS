@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Identity.Application.Features.User.CommandHandlers
 {
-    public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
+    public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
     {
         private readonly IIdentityService _identityService;
 

@@ -7,6 +7,7 @@ public static class ServiceExtentions
 {
     public static void AddIdentityApplication(this IServiceCollection services)
     {
-        services.AddMediatR(conf => conf.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        services.AddMediatR(conf => 
+            conf.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
     }
 }

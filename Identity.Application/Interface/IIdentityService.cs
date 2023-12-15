@@ -1,6 +1,10 @@
-﻿namespace Identity.Application.Interface
+﻿using Identity.Application.DTOs;
+using Identity.Application.DTOs.Auth;
+using Identity.Persistance.Identity;
+
+namespace Identity.Application.Interface
 {
-    public interface IIdentityService
+    public interface IIdentityService: IServiceBase
     {
         //Role
         Task<bool> CreateRoleAsync(string roleName);
@@ -28,7 +32,11 @@
         Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName);
         Task<bool> IsUniqueUserName(string userName);
 
+        Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user);
+        Task<ApplicationUser> GetUserByIdAsync(string userName);
+
         //Account
         Task<bool> SigninUserAsync(string userName, string password);
+        Task<JwtTokenDto> GetJwtSecurityTokenAsync(ApplicationUser user);
     }
 }

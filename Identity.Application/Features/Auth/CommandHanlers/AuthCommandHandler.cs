@@ -1,42 +1,34 @@
 ﻿using Identity.Application.Common.Exceptions;
-using Identity.Application.DTOs;
+using Identity.Application.DTOs.Auth;
 using Identity.Application.Features.Auth.Command;
 using Identity.Application.Interface;
 using MediatR;
 
-namespace Identity.Application.Features.Auth.CommandHanlers
+namespace Identity.Application.Features.Auth.CommandHanlers;
+
+internal sealed class AuthCommandHandler : IRequestHandler<AuthCommand, JwtTokenDto>
 {
-    internal sealed class AuthCommandHandler : IRequestHandler<AuthCommand, AuthResponseDto>
+    private readonly IIdentityService _identityService;
+
+    public AuthCommandHandler(IIdentityService identityService)
     {
-        private readonly IIdentityService _identityService;
-        private readonly ITokenGenerator _tokenGenerator;
+        _identityService = identityService;
+    }
 
-        public AuthCommandHandler(IIdentityService identityService,
-            ITokenGenerator tokenGenerator)
+
+    public async Task<JwtTokenDto> Handle(AuthCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _identityService.SigninUserAsync(request.UserName, request.Password);
+
+        if (!result)
         {
-            _identityService = identityService;
-            _tokenGenerator = tokenGenerator;
+            throw new BadRequestException("Invalid username or password");
         }
 
-        public async Task<AuthResponseDto> Handle(AuthCommand request, CancellationToken cancellationToken)
-        {
-            var result = await _identityService.SigninUserAsync(request.UserName, request.Password);
+        var user = await _identityService.GetUserByIdAsync(request.UserName);
 
-            if (!result)
-            {
-                throw new BadRequestException("Invalid username or password");
-            }
+        JwtTokenDto token = await _identityService.GetJwtSecurityTokenAsync(user);
+        return token;
 
-            var (userId, fullName, userName, email, roles) = await _identityService.GetUserDetailsAsync(await _identityService.GetUserIdAsync(request.UserName));
-
-            string token = _tokenGenerator.GenerateJWTToken((userId: userId, userName: userName, roles: roles));
-
-            return new AuthResponseDto()
-            {
-                UserId = userId,
-                Name = userName,
-                Token = token
-            };
-        }
     }
 }

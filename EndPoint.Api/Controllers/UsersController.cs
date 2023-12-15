@@ -3,12 +3,16 @@ using Identity.Application.DTOs;
 using Identity.Application.Features.User.Commands;
 using Identity.Application.Features.User.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, Manager")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,6 +24,7 @@ namespace EndPoint.Api.Controllers
 
         [HttpPost("Create")]
         [ProducesDefaultResponseType(typeof(int))]
+        [AllowAnonymous]
         public async Task<ActionResult> CreateUser(CreateUserCommand command)
         {
             return Ok(await _mediator.Send(command));
@@ -27,7 +32,7 @@ namespace EndPoint.Api.Controllers
 
         [HttpGet("GetAll")]
         [ProducesDefaultResponseType(typeof(List<UserResponseDto>))]
-        public async Task<IActionResult> GetAllUserAsync()
+         public async Task<IActionResult> GetAllUserAsync()
         {
             return Ok(await _mediator.Send(new GetUsersQuery()));
         }

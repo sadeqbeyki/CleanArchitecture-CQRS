@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Identity.Application.Features.User.CommandHandlers
 {
-    internal sealed class AssignUserToRoleCommandHandler : IRequestHandler<AssignUserToRoleCommand, int>
+    public sealed class AssignUserToRoleCommandHandler : IRequestHandler<AssignUserToRoleCommand, int>
     {
         private readonly IIdentityService _identityService;
 

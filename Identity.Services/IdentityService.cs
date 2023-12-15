@@ -1,26 +1,51 @@
-﻿using Identity.Application.Common.Exceptions;
+﻿using AutoMapper;
+using Identity.Application.Common.Exceptions;
+using Identity.Application.DTOs;
+using Identity.Application.DTOs.AppSettings;
+using Identity.Application.DTOs.Auth;
 using Identity.Application.Interface;
 using Identity.Persistance.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 
 
 namespace Identity.Services
 {
-    public class IdentityService : IIdentityService
+    public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public IdentityService(UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
+        protected readonly AppSettings _appSettings;
+        private readonly IMapper _mapper;
+
+        public IdentityService(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            SignInManager<ApplicationUser> signInManager,
+
+            AppSettings appSettings,
+            IMapper mapper,
+
+            IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+
+            _appSettings = appSettings;
+            _mapper = mapper;
         }
 
         #region User
@@ -40,6 +65,9 @@ namespace Identity.Services
                 var errors = result.Errors.Select(e => e.Description);
                 throw new ValidationException(string.Join("\n", errors));
             }
+
+            if (roles == null || !roles.Any() || roles.All(string.IsNullOrWhiteSpace))
+                roles = new List<string> { "Member" };
 
             var addUserRole = await _userManager.AddToRolesAsync(user, roles);
             if (!addUserRole.Succeeded)
@@ -135,14 +163,6 @@ namespace Identity.Services
         }
         #endregion
 
-        #region Account
-        public async Task<bool> SigninUserAsync(string userName, string password)
-        {
-            var result = await _signInManager.PasswordSignInAsync(userName, password, true, false);
-            return result.Succeeded;
-        }
-        #endregion
-
         #region Role
         public async Task<bool> CreateRoleAsync(string roleName)
         {
@@ -188,7 +208,7 @@ namespace Identity.Services
                 throw new NotFoundException("Role not found");
             }
 
-            if (roleDetails.Name == "Administrator")
+            if (roleDetails.Name == "Admin")
             {
                 throw new BadRequestException("You can not delete Administrator Role");
             }
@@ -242,6 +262,117 @@ namespace Identity.Services
             result = await _userManager.AddToRolesAsync(user, usersRole);
 
             return result.Succeeded;
+        }
+        #endregion
+
+        #region Account
+        public async Task<bool> SigninUserAsync(string userName, string password)
+        {
+            var result = await _signInManager.PasswordSignInAsync(userName, password, true, false);
+            if (!result.Succeeded)
+            {
+                throw new NotFoundException("user is not allowed");
+            }
+            return result.Succeeded;
+        }
+
+        #endregion
+
+        #region private extention   
+
+        /// <summary>
+        /// Generate JWT token for user
+        /// </summary>
+        /// <param name="user">User entity for which token will be generate</param>
+        /// <returns>Generated token details including expire data</returns>
+        public async Task<JwtTokenDto> GetJwtSecurityTokenAsync(ApplicationUser user)
+        {
+            var jwtOptions = _appSettings.JwtIssuerOptions;
+
+            // Obtain existing claims, Here we will obtain last 4 JTI claims only
+            // As We only maintain login for 5 maximum sessions, So need to remove other from that
+            var allClaims = await _userManager.GetClaimsAsync(user);
+            var toRemoveClaims = new List<Claim>();
+            var allJtiClaims = allClaims.Where(claim => claim.Type.Equals(JwtRegisteredClaimNames.Jti)).ToList();
+            if (allJtiClaims.Count > 4)
+            {
+                toRemoveClaims = allJtiClaims.SkipLast(4).ToList();
+                allJtiClaims = allJtiClaims.TakeLast(4).ToList();
+            }
+
+            SigningCredentials credentials = new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtOptions.SecretKey)), SecurityAlgorithms.HmacSha256);
+
+            DateTime tokenExpireOn = DateTime.Now.AddHours(3);
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Development", StringComparison.InvariantCultureIgnoreCase) == true)
+            {
+                // If its development then set 3 years as token expiry for testing purpose
+                tokenExpireOn = DateTime.Now.AddYears(3);
+            }
+
+            string roles = string.Join("; ", await _userManager.GetRolesAsync(user));
+
+            // Obtain Role of User
+            IList<string> rolesOfUser = await _userManager.GetRolesAsync(user);
+
+            // Add new claims
+            List<Claim> tokenClaims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Role, rolesOfUser.FirstOrDefault() ?? "Member"),
+            };
+
+            // Make JWT token
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: jwtOptions.Issuer,
+                audience: jwtOptions.Audience,
+                claims: tokenClaims.Union(allJtiClaims),
+                expires: tokenExpireOn,
+                signingCredentials: credentials
+            );
+            //_logger.LogDebug($"Token generated. UserId: {user.Email}");
+
+            // Set current user details for busines & common library
+            var currentUser = await _userManager.FindByEmailAsync(user.Email);
+
+            // Update claim details
+            await _userManager.RemoveClaimsAsync(currentUser, toRemoveClaims);
+            await _userManager.AddClaimsAsync(currentUser, tokenClaims);
+
+            // Return it
+            JwtTokenDto generatedToken = new JwtTokenDto
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                ExpireOn = tokenExpireOn,
+                UserDetails = await GetUserDetailsAsync(currentUser)
+            };
+
+            return generatedToken;
+        }
+
+        public async Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user)
+        {
+            if (user != null)
+            {
+                var userDetails = _mapper.Map<UserDetailsDto>(user);
+
+                var currentUserRoles = await _userManager.GetRolesAsync(user);
+                userDetails.Role = currentUserRoles.FirstOrDefault() ?? string.Empty;
+                return userDetails;
+            }
+
+            return null;
+        }
+
+        public async Task<ApplicationUser> GetUserByIdAsync(string userName)
+        {
+            if (userName != null)
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                return user;
+            }
+            return null;
         }
         #endregion
     }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Identity.Application.Features.User.CommandHandlers
 {
-    internal sealed class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, int>
+    public sealed class UpdateUserCommandHandler:IRequestHandler<UpdateUserCommand, int>
     {
     private readonly IIdentityService _identityService;
 

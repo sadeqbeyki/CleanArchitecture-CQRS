@@ -1,12 +1,18 @@
 ﻿using Application.Features.Products.Commands;
 using Application.Features.Products.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.Api.Controllers
 {
+    //[EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Member")]
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -16,8 +22,8 @@ namespace EndPoint.Api.Controllers
             _mediator = mediator;
         }
 
-
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProducts()
         {
             var result = await _mediator.Send(new GetAllProductQuery());

@@ -52,8 +52,8 @@ namespace EndPoint.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct(UpdateProductCommand updateCommand,
+        [HttpPut("UpdateProduct/{id}")]
+        public async Task<IActionResult> UpdateProduct(string id, [FromBody]UpdateProductCommand updateCommand,
             CancellationToken cancellationToken)
         {
 

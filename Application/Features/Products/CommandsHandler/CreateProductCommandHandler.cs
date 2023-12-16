@@ -1,11 +1,9 @@
 ﻿using Application.Features.Products.Commands;
-using Domain.Products;
+using Domain.Entities.Products;
 using Identity.Application.Interface;
 using Infrastructure.ACL;
 using MediatR;
 using Persistance;
-using System.Runtime.CompilerServices;
-using System.Security.Principal;
 
 namespace Application.Features.Products.CommandsHandler;
 

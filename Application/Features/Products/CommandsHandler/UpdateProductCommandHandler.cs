@@ -1,6 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Features.Products.Commands;
-using Domain.Products;
+using Domain.Entities.Products;
 using Infrastructure.ACL;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -12,11 +12,13 @@ namespace Application.Features.Products.CommandsHandler;
 public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, int>
 {
     private readonly IProductDbContext _productDbContext;
+    private readonly IUserServiceACL _userServiceACL;
 
     public UpdateProductCommandHandler(
-        IProductDbContext productDbContext)
+        IProductDbContext productDbContext, IUserServiceACL userServiceACL)
     {
         _productDbContext = productDbContext;
+        _userServiceACL = userServiceACL;
     }
 
     public async Task<int> Handle(UpdateProductCommand request, CancellationToken cancellationToken)

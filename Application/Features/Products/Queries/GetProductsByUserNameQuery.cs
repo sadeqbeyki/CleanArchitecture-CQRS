@@ -1,4 +1,4 @@
-﻿using Domain.Products;
+﻿using Domain.Entities.Products;
 using MediatR;
 
 namespace Application.Features.Products.Queries;

@@ -1,6 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Features.Products.Commands;
-using Domain.Products;
+using Domain.Entities.Products;
 using Infrastructure.ACL;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

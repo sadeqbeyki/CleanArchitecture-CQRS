@@ -1,6 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Features.Products.Queries;
-using Domain.Products;
+using Domain.Entities.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistance;

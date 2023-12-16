@@ -1,5 +1,4 @@
-﻿using Domain.Products;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Features.Products.Commands;
 public class CreateProductCommand : IRequest<int>

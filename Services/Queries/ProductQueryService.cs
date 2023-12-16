@@ -13,7 +13,7 @@ namespace Services.Queries
             _repository = repository;
         }
 
-        public async Task<ProductDetailsDto> GetById(int id)
+        public async Task<ProductDetailsDto> GetProductById(int id)
         {
             var product = await _repository.GetByIdAsync(id);
             ProductDetailsDto productDetails = new()

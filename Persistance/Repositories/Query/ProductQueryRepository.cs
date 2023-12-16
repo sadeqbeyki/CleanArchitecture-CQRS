@@ -7,7 +7,7 @@ namespace Persistance.Repositories.Query
 {
     public class ProductQueryRepository : QueryRepository<Product, int>, IProductQueryRepository
     {
-        public ProductQueryRepository(DbContext dbContext, DbSet<Product> dbSet) : base(dbContext, dbSet)
+        public ProductQueryRepository(ProductDbContext dbContext) : base(dbContext)
         {
         }
     }

@@ -1,6 +1,4 @@
-﻿using Domain.Products;
-
-namespace Application.Exceptions;
+﻿namespace Application.Exceptions;
 
 public sealed class NotFoundException : Exception
 {

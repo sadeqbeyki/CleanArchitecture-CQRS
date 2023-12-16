@@ -1,7 +1,9 @@
 ﻿using Application.Features.Products.Commands;
 using Application.Features.Products.Queries;
+using Application.Interface.Query;
 using Infrastructure.ACL;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +17,15 @@ namespace EndPoint.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IUserServiceACL _userServiceACL;
-        public ProductsController(IMediator mediator, IUserServiceACL userServiceACL)
+        private readonly IProductQueryService _productQueryService;
+        public ProductsController(
+            IMediator mediator,
+            IUserServiceACL userServiceACL,
+            IProductQueryService productQueryService)
         {
             _mediator = mediator;
             _userServiceACL = userServiceACL;
+            _productQueryService = productQueryService;
         }
 
         [HttpGet]
@@ -53,14 +60,15 @@ namespace EndPoint.Api.Controllers
         }
 
         [HttpPut("UpdateProduct/{id}")]
-        public async Task<IActionResult> UpdateProduct(string id, [FromBody]UpdateProductCommand updateCommand,
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody]UpdateProductCommand updateCommand,
             CancellationToken cancellationToken)
         {
             var user = await _userServiceACL.GetCurrentUserByClaimAsync(User);
-            //if (user.Email != request.ManufacturerEmail)
-            //{
-            //    return BadRequest("You can only edit products that you have created yourself.");
-            //}
+            var product = await _productQueryService.GetProductById(updateCommand.Id);
+            if (user.Email != product.ManufacturerEmail)
+            {
+                return BadRequest("You can only edit products that you have created yourself.");
+            }
             var result = await _mediator.Send(updateCommand, cancellationToken);
             return Ok(result);
         }

@@ -9,10 +9,10 @@ namespace Persistance.Repositories.Query.Base
         private readonly DbContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
 
-        public QueryRepository(DbContext dbContext, DbSet<TEntity> dbSet)
+        public QueryRepository(DbContext dbContext)
         {
             _dbContext = dbContext;
-            _dbSet = dbSet;
+            _dbSet = _dbContext.Set<TEntity>();
         }
 
         public async Task<TEntity> GetByIdAsync(TKey id)

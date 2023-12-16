@@ -4,6 +4,6 @@ namespace Application.Interface.Query
 {
     public interface IProductQueryService
     {
-        Task<ProductDetailsDto> GetById(int id);
+        Task<ProductDetailsDto> GetProductById(int id);
     }
 }

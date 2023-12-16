@@ -1,10 +1,16 @@
-﻿namespace Domain.Entities.Products;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Entities.Products;
 
 public class Product : BaseEntity
 {
+    [Required][StringLength(100)]
     public string Name { get; private set; }
+    [Required][Phone]
     public string ManufacturerPhone { get; private set; }
+    [Required(ErrorMessage ="need to choose")][EmailAddress]
     public string ManufacturerEmail { get; private set; }
+
     public bool IsAvailable { get; private set; }
 
 

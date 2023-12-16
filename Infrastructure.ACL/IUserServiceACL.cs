@@ -8,10 +8,9 @@ namespace Infrastructure.ACL;
 
 public interface IUserServiceACL
 {
-    Task<UserInfo> GetCurrentUserByEmailAsync(string email);
-    Task<UserInfo> GetCurrentUserByClaimAsync(ClaimsPrincipal user);
-    Task<UserInfo> GetCurrentUserAsync();
+    //Task<UserInfo> GetCurrentUserByEmailAsync(string email);
 
+    Task<UserInfo> GetCurrentUserByClaimAsync(ClaimsPrincipal user);
     Task<UserInfo> GetCurrentUser();
 }
 
@@ -38,16 +37,16 @@ public class UserServiceACL : IUserServiceACL
         _identityService = identityService;
     }
 
-    public async Task<UserInfo> GetCurrentUserByEmailAsync(string email)
-    {
-        var applicationUser = await _userManager.FindByEmailAsync(email);
+    //public async Task<UserInfo> GetCurrentUserByEmailAsync(string email)
+    //{
+    //    var applicationUser = await _userManager.FindByEmailAsync(email);
 
-        return new UserInfo
-        {
-            Email = applicationUser?.Email,
-            PhoneNumber = applicationUser?.PhoneNumber,
-        };
-    }
+    //    return new UserInfo
+    //    {
+    //        Email = applicationUser?.Email,
+    //        PhoneNumber = applicationUser?.PhoneNumber,
+    //    };
+    //}
 
     public async Task<UserInfo> GetCurrentUserByClaimAsync(ClaimsPrincipal user)
     {
@@ -59,19 +58,6 @@ public class UserServiceACL : IUserServiceACL
             PhoneNumber = applicationUser?.PhoneNumber?.ToString(),
         };
     }
-
-    public async Task<UserInfo> GetCurrentUserAsync()
-    {
-        var user = _contextAccessor.HttpContext?.User;
-        if (user != null)
-        {
-            var email = await GetCurrentUserByEmailAsync(user.Identity?.Name);
-            return email;
-        }
-
-        return null;
-    }
-
 
     public async Task<UserInfo> GetCurrentUser()
     {

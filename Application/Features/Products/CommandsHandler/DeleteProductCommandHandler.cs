@@ -25,7 +25,7 @@ public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductC
         var product = await _productDbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id)
             ?? throw new NotFoundException(nameof(Product), request.Id);
 
-        var user = await _userServiceACL.GetCurrentUserByEmailAsync(product.ManufacturerEmail)
+        var user = await _userServiceACL.GetCurrentUser()
             ?? throw new NotFoundException(request.Id);
 
         if (product.ManufacturerEmail != user.Email)

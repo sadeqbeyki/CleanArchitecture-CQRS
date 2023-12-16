@@ -56,7 +56,11 @@ namespace EndPoint.Api.Controllers
         public async Task<IActionResult> UpdateProduct(string id, [FromBody]UpdateProductCommand updateCommand,
             CancellationToken cancellationToken)
         {
-
+            var user = await _userServiceACL.GetCurrentUserByClaimAsync(User);
+            //if (user.Email != request.ManufacturerEmail)
+            //{
+            //    return BadRequest("You can only edit products that you have created yourself.");
+            //}
             var result = await _mediator.Send(updateCommand, cancellationToken);
             return Ok(result);
         }

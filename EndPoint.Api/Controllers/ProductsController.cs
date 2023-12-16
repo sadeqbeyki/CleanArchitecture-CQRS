@@ -1,14 +1,12 @@
 ﻿using Application.Features.Products.Commands;
 using Application.Features.Products.Queries;
+using Infrastructure.ACL;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.Api.Controllers
 {
-    //[EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -16,10 +14,11 @@ namespace EndPoint.Api.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
-
-        public ProductsController(IMediator mediator)
+        private readonly IUserServiceACL _userServiceACL;
+        public ProductsController(IMediator mediator, IUserServiceACL userServiceACL)
         {
             _mediator = mediator;
+            _userServiceACL = userServiceACL;
         }
 
         [HttpGet]
@@ -27,6 +26,14 @@ namespace EndPoint.Api.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var result = await _mediator.Send(new GetAllProductQuery());
+            return Ok(result);
+        }
+
+        [HttpGet("GetProductsByEmail/{email}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductsByEmail(string userEmail)
+        {
+            var result = await _mediator.Send(new GetProductsByUserNameQuery(userEmail));
             return Ok(result);
         }
 
@@ -49,6 +56,7 @@ namespace EndPoint.Api.Controllers
         public async Task<IActionResult> UpdateProduct(UpdateProductCommand updateCommand,
             CancellationToken cancellationToken)
         {
+
             var result = await _mediator.Send(updateCommand, cancellationToken);
             return Ok(result);
         }

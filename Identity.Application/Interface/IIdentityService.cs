@@ -33,7 +33,8 @@ namespace Identity.Application.Interface
         Task<bool> IsUniqueUserName(string userName);
 
         Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user);
-        Task<ApplicationUser> GetUserByIdAsync(string userName);
+        Task<ApplicationUser> GetUserByNameAsync(string userName);
+        Task<ApplicationUser> GetUserByIdAsync(string id);
 
         //Account
         Task<bool> SigninUserAsync(string userName, string password);

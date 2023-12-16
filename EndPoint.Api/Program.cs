@@ -1,9 +1,11 @@
 using Application;
+using Autofac.Core;
 using EndPoint.Api.Helper;
 using Identity.Application;
 using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
+using Infrastructure.ACL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +48,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
+
+app.UseRouting();
 
 app.UseCors("AllowAll");
 

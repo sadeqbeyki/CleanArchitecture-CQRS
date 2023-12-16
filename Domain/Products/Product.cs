@@ -5,22 +5,22 @@ namespace Domain.Products;
 public class Product : BaseEntity
 {
     public string Name { get; private set; }
-    public string ManufacturePhone { get; private set; }
-    public string ManufactureEmail { get; private set; }
+    public string ManufacturerPhone { get; private set; }
+    public string ManufacturerEmail { get; private set; }
     public bool IsAvailable { get; private set; }
 
 
-    public Product(string name, string manufacturePhone, string manufactureEmail)
+    public Product(string name, string manufacturerPhone, string manufacturerEmail)
     {
         Name = name;
-        ManufacturePhone = manufacturePhone;
-        ManufactureEmail = manufactureEmail;
+        ManufacturerPhone = manufacturerPhone;
+        ManufacturerEmail = manufacturerEmail;
         IsAvailable = false;
     }
-    public void Edit(string name, string manufacturePhone, string manufactureEmail)
+    public void Edit(string name, string manufacturerPhone, string manufacturerEmail)
     {
         Name = name;
-        ManufacturePhone = manufacturePhone;
-        ManufactureEmail = manufactureEmail;
+        ManufacturerPhone = manufacturerPhone;
+        ManufacturerEmail = manufacturerEmail;
     }
 }

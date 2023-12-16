@@ -1,7 +1,9 @@
 ﻿using Application.Exceptions;
 using Application.Features.Products.Commands;
 using Domain.Products;
+using Infrastructure.ACL;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistance;
 
@@ -11,7 +13,8 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
 {
     private readonly IProductDbContext _productDbContext;
 
-    public UpdateProductCommandHandler(IProductDbContext productDbContext)
+    public UpdateProductCommandHandler(
+        IProductDbContext productDbContext)
     {
         _productDbContext = productDbContext;
     }
@@ -19,12 +22,13 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
     public async Task<int> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         var product = await _productDbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
+
         if (product != null)
         {
             product.Edit(
             request.Name,
-            request.ManufacturePhone,
-            request.ManufactureEmail);
+            request.ManufacturerPhone,
+            request.ManufacturerEmail);
             await _productDbContext.SaveChangeAsync();
             return product.Id;
         }

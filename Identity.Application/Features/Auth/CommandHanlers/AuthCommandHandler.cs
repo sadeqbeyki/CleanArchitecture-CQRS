@@ -25,7 +25,7 @@ internal sealed class AuthCommandHandler : IRequestHandler<AuthCommand, JwtToken
             throw new BadRequestException("Invalid username or password");
         }
 
-        var user = await _identityService.GetUserByIdAsync(request.UserName);
+        var user = await _identityService.GetUserByNameAsync(request.UserName);
 
         JwtTokenDto token = await _identityService.GetJwtSecurityTokenAsync(user);
         return token;

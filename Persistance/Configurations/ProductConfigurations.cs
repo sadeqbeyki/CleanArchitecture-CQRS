@@ -11,7 +11,7 @@ internal class ProductConfigurations : IEntityTypeConfiguration<Product>
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Name).HasMaxLength(255);
-        builder.Property(p => p.ManufacturePhone).HasMaxLength(50);
-        builder.Property(p => p.ManufactureEmail).HasMaxLength(100);
+        builder.Property(p => p.ManufacturerPhone).HasMaxLength(50);
+        builder.Property(p => p.ManufacturerEmail).HasMaxLength(100);
     }
 }

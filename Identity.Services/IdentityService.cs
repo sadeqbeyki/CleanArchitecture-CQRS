@@ -7,12 +7,7 @@ using Identity.Application.Interface;
 using Identity.Persistance.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
@@ -365,7 +360,7 @@ namespace Identity.Services
             return null;
         }
 
-        public async Task<ApplicationUser> GetUserByIdAsync(string userName)
+        public async Task<ApplicationUser> GetUserByNameAsync(string userName)
         {
             if (userName != null)
             {
@@ -373,6 +368,12 @@ namespace Identity.Services
                 return user;
             }
             return null;
+        }
+
+        public async Task<ApplicationUser> GetUserByIdAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            return user ?? throw new NotFoundException("cant find user");
         }
         #endregion
     }

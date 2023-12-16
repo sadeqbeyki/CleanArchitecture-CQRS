@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Infrastructure.ACL;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,8 @@ public static class ServiceExtentions
             option.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IProductDbContext, ProductDbContext>();
+        services.AddScoped<IUserServiceACL, UserServiceACL>();
+
     }
     public static void CreateDatabase(this IApplicationBuilder app)
     {

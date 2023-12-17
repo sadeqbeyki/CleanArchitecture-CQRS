@@ -1,13 +1,9 @@
-﻿using AutoMapper;
-using Identity.Application.Common.Const;
+﻿using Identity.Application.Common.Const;
 using Identity.Application.Common.Exceptions;
-using Identity.Application.DTOs.AppSettings;
 using Identity.Application.Interface;
 using Identity.Persistance.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 namespace Identity.Services;
@@ -19,26 +15,14 @@ public class ServiceBase<TService> : IServiceBase where TService : class
 {
     #region Fields & Ctor
 
-    protected readonly ILogger<TService> _logger;
     protected readonly IHttpContextAccessor _httpContextAccessor;
-    protected readonly IMapper _mapper;
-
-    protected readonly AppSettings _appSettings;
     protected readonly UserManager<ApplicationUser> _userManager;
 
-    protected readonly IStringLocalizerFactory _localizerFactory;
-    protected readonly IStringLocalizer _sharedLocalizer;
 
     protected ServiceBase(IServiceProvider serviceProvider)
     {
-        _logger = (ILogger<TService>)serviceProvider.GetService(typeof(ILogger<TService>));
         _httpContextAccessor = (IHttpContextAccessor)serviceProvider.GetService(typeof(IHttpContextAccessor));
-        _mapper = (IMapper)serviceProvider.GetService(typeof(IMapper));
-
-        _appSettings = (AppSettings)serviceProvider.GetService(typeof(AppSettings));
         _userManager = (UserManager<ApplicationUser>)serviceProvider.GetService(typeof(UserManager<ApplicationUser>));
-
-        _localizerFactory = (IStringLocalizerFactory)serviceProvider.GetService(typeof(IStringLocalizerFactory));
     }
 
     #endregion

@@ -21,8 +21,11 @@ namespace Identity.Application.Features.User.QueryHandlers
             var userDetails = users.Select(x => new UserDetailsResponseDto()
             {
                 Id = x.id,
+                UserName = x.userName,
+                FirstName = x.firstName,
+                LastName = x.lastName,
                 Email = x.email,
-                UserName = x.userName
+                PhoneNumber = x.phoneNumber
             }).ToList();
 
             foreach (var user in userDetails)

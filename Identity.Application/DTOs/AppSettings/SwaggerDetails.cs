@@ -3,7 +3,7 @@
 public class SwaggerDetails
 {
     public string ApiVersion { get; set; }
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty?? "nadin soft test service";
     public string Description { get; set; }
     public string Template { get; set; }
     public string RoutePrefix { get; set; }

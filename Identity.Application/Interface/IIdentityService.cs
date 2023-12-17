@@ -4,7 +4,7 @@ using Identity.Persistance.Identity;
 
 namespace Identity.Application.Interface
 {
-    public interface IIdentityService: IServiceBase
+    public interface IIdentityService : IServiceBase
     {
         //Role
         Task<bool> CreateRoleAsync(string roleName);
@@ -20,16 +20,16 @@ namespace Identity.Application.Interface
         Task<bool> UpdateUsersRole(string userName, IList<string> usersRole);
 
         //User
-        Task<(bool isSucceed, string userId)> CreateUserAsync(string userName, string password, string email, string fullName, List<string> roles);
-        Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsAsync(string userId);
-        Task<List<(string id, string fullName, string userName, string email)>> GetAllUsersAsync();
-        Task<bool> UpdateUser(string id, string fullName, string email, IList<string> roles);
+        Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterUserDto userDto);
+        Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsAsync(string userId);
+        Task<List<(string id, string userName, string firstName, string lastName, string email, string phoneNumber)>> GetAllUsersAsync();
+        Task<bool> UpdateUser(string id, string firstName, string lastName, string email, IList<string> roles);
         Task<bool> DeleteUserAsync(string userId);
 
         //User more option
         Task<string> GetUserIdAsync(string userName);
         Task<string> GetUserNameAsync(string userId);
-        Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName);
+        Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName);
         Task<bool> IsUniqueUserName(string userName);
 
         Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user);

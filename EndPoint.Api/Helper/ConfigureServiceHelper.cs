@@ -29,7 +29,7 @@ namespace EndPoint.Api.Helper
                 var apiInfo = new OpenApiInfo
                 {
                     Version = configuration["SwaggerDetails:ApiVersion"],
-                    Title = "Nadin Soft Test App",
+                    Title = configuration["SwaggerDetails:Title"],
                     Description = configuration["SwaggerDetails:Description"],
                     Contact = new OpenApiContact
                     {

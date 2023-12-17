@@ -20,7 +20,8 @@ namespace Identity.Application.Features.User.QueryHandlers
             var result = users.Select(u => new UserResponseDto()
             {
                 Id = u.id,
-                FullName = u.fullName,
+                FirstName = u.firstName,
+                LastName = u.lastName,
                 UserName = u.userName,
                 Email = u.email,
 

@@ -10,15 +10,28 @@ namespace Identity.Application.Features.User.QueryHandlers
     {
         private readonly IIdentityService _identityService;
 
-        public GetUserDetailsByUserNameQueryHandler(IIdentityService identityService)
+        public GetUserDetailsByUserNameQueryHandler(
+            IIdentityService identityService)
         {
             _identityService = identityService;
         }
 
-        public async Task<UserDetailsResponseDto> Handle(GetUserDetailsByUserNameQuery request, CancellationToken cancellationToken)
+        public async Task<UserDetailsResponseDto> Handle(
+            GetUserDetailsByUserNameQuery request,
+            CancellationToken cancellationToken)
         {
-            var (userId, fullName, userName, email, roles) = await _identityService.GetUserDetailsByUserNameAsync(request.Username);
-            return new UserDetailsResponseDto() { Id = userId, FullName = fullName, UserName = userName, Email = email, Roles = roles };
+            var (userId, userName, firstName, lastName, email, phoneNumber, roles)
+                = await _identityService.GetUserDetailsByUserNameAsync(request.Username);
+            return new UserDetailsResponseDto()
+            {
+                Id = userId,
+                FirstName = firstName,
+                LastName = lastName,
+                UserName = userName,
+                Email = email,
+                PhoneNumber = phoneNumber,
+                Roles = roles
+            };
         }
     }
 }

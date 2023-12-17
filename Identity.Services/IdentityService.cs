@@ -44,16 +44,11 @@ namespace Identity.Services
         }
 
         #region User
-        public async Task<(bool isSucceed, string userId)> CreateUserAsync(string userName, string password, string email, string fullName, List<string> roles)
+        public async Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterUserDto userDto)
         {
-            var user = new ApplicationUser()
-            {
-                FullName = fullName,
-                UserName = userName,
-                Email = email
-            };
+            var user = _mapper.Map<ApplicationUser>(userDto);
 
-            var result = await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, userDto.Password);
 
             if (!result.Succeeded)
             {
@@ -61,13 +56,13 @@ namespace Identity.Services
                 throw new ValidationException(string.Join("\n", errors));
             }
 
-            if (roles == null 
-                || !roles.Any()
-                || roles.All(string.IsNullOrWhiteSpace)
-                || roles.Contains("string"))
-                roles = new List<string> { "Member" };
+            if (userDto.Roles == null
+                || !userDto.Roles.Any()
+                || userDto.Roles.All(string.IsNullOrWhiteSpace)
+                || userDto.Roles.Contains("string"))
+                userDto.Roles = new List<string> { "Member" };
 
-            var addUserRole = await _userManager.AddToRolesAsync(user, roles);
+            var addUserRole = await _userManager.AddToRolesAsync(user, userDto.Roles);
             if (!addUserRole.Succeeded)
             {
                 var errors = addUserRole.Errors.Select(e => e.Description);
@@ -75,19 +70,30 @@ namespace Identity.Services
             }
             return (result.Succeeded, user.Id);
         }
-        public async Task<List<(string id, string fullName, string userName, string email)>> GetAllUsersAsync()
+
+
+        public async Task<List<(string id, string userName, string firstName, string lastName, string email, string phoneNumber)>> GetAllUsersAsync()
         {
             var users = await _userManager.Users.Select(x => new
             {
                 x.Id,
-                x.FullName,
                 x.UserName,
-                x.Email
+                x.FirstName,
+                x.LastName,
+                x.Email,
+                x.PhoneNumber
             }).ToListAsync();
 
-            return users.Select(user => (user.Id, user.FullName, user.UserName, user.Email)).ToList();
+            return users.Select(user =>
+            (
+            user.Id,
+            user.UserName,
+            user.FirstName,
+            user.LastName,
+            user.Email,
+            user.PhoneNumber)).ToList();
         }
-        public async Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsAsync(string userId)
+        public async Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsAsync(string userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (user == null)
@@ -95,12 +101,13 @@ namespace Identity.Services
                 throw new NotFoundException("User not found");
             }
             var roles = await _userManager.GetRolesAsync(user);
-            return (user.Id, user.FullName, user.UserName, user.Email, roles);
+            return (user.Id, user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, roles);
         }
-        public async Task<bool> UpdateUser(string id, string fullName, string email, IList<string> roles)
+        public async Task<bool> UpdateUser(string id, string firstName, string lastName, string email, IList<string> roles)
         {
             var user = await _userManager.FindByIdAsync(id);
-            user.FullName = fullName;
+            user.FirstName = firstName;
+            user.LastName = lastName;
             user.Email = email;
             var result = await _userManager.UpdateAsync(user);
 
@@ -145,7 +152,7 @@ namespace Identity.Services
             }
             return await _userManager.GetUserIdAsync(user);
         }
-        public async Task<(string userId, string fullName, string userName, string email, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName)
+        public async Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
             if (user == null)
@@ -153,7 +160,7 @@ namespace Identity.Services
                 throw new NotFoundException("User not found");
             }
             var roles = await _userManager.GetRolesAsync(user);
-            return (user.Id, user.FullName, user.UserName, user.Email, roles);
+            return (user.Id, user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, roles);
         }
         public async Task<bool> IsUniqueUserName(string userName)
         {
@@ -301,7 +308,8 @@ namespace Identity.Services
             SigningCredentials credentials = new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtOptions.SecretKey)), SecurityAlgorithms.HmacSha256);
 
             DateTime tokenExpireOn = DateTime.Now.AddHours(3);
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Development", StringComparison.InvariantCultureIgnoreCase) == true)
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?
+                .Equals("Development", StringComparison.InvariantCultureIgnoreCase) == true)
             {
                 // If its development then set 3 years as token expiry for testing purpose
                 tokenExpireOn = DateTime.Now.AddYears(3);
@@ -329,7 +337,6 @@ namespace Identity.Services
                 expires: tokenExpireOn,
                 signingCredentials: credentials
             );
-            //_logger.LogDebug($"Token generated. UserId: {user.Email}");
 
             // Set current user details for busines & common library
             var currentUser = await _userManager.FindByEmailAsync(user.Email);

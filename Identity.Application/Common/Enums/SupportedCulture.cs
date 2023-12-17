@@ -9,10 +9,10 @@ namespace Identity.Application.Common.Enums
         [EnumDescription("en")]
         en = 0,
 
-        [EnumDescription("hi")]
-        hi = 1,
+        [EnumDescription("fa")]
+        fa = 1,
 
-        [EnumDescription("fr")]
-        fr = 2
+        [EnumDescription("ar")]
+        ar = 2
     }
 }

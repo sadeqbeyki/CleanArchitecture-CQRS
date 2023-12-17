@@ -22,7 +22,8 @@ namespace Identity.Application.Features.User.CommandHandlers
         {
             var user = await _identityService.UpdateUser(
                 request.Id,
-                request.FullName,
+                request.FirstName,
+                request.LastName,
                 request.Email,
                 request.Roles);
             return user ? 1 : 0;

@@ -14,15 +14,14 @@ namespace Identity.Application.Mapper
 
             CreateMap<ApplicationUser, UserDetailsDto>()
                 .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.Id))
-                /*.ForMember(dest => dest.Culture, options => options.MapFrom(src => (SupportedCulture)src.Culture))*/;
+                .ForMember(dest => dest.Culture, options => options.MapFrom(src => (SupportedCulture)src.Culture));
 
             CreateMap<RegisterUserDto, ApplicationUser>()
                 .BeforeMap((src, dest) =>
                 {
-                    //dest.IsActive = true;
-                    //dest.JoinedOn = DateTime.Now;
-                    dest.UserName = src.Email;
-                    //dest.Culture = (int)SupportedCulture.en;
+                    dest.JoinedOn = DateTime.Now;
+                    //dest.UserName = src.Email;
+                    dest.Culture = (int)SupportedCulture.fa;
                 });
         }
     }

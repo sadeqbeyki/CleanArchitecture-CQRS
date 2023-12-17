@@ -1,4 +1,6 @@
-﻿namespace EndPoint.Api.Helper
+﻿using Microsoft.OpenApi.Models;
+
+namespace EndPoint.Api.Helper
 {
     public static class ApplicationBuilderHelper
     {
@@ -7,7 +9,10 @@
             var apiVersion = configuration["SwaggerDetails:ApiVersion"];
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
-            app.UseSwagger(c => { c.RouteTemplate = configuration["SwaggerDetails:Template"]; });
+            app.UseSwagger(c => 
+            { 
+                c.RouteTemplate = configuration["SwaggerDetails:Template"];
+            });
 
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUI(options =>

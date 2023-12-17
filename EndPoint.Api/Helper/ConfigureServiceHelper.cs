@@ -29,7 +29,7 @@ namespace EndPoint.Api.Helper
                 var apiInfo = new OpenApiInfo
                 {
                     Version = configuration["SwaggerDetails:ApiVersion"],
-                    Title = configuration["SwaggerDetails:Title"],
+                    Title = "Nadin Soft Test App",
                     Description = configuration["SwaggerDetails:Description"],
                     Contact = new OpenApiContact
                     {
@@ -38,6 +38,7 @@ namespace EndPoint.Api.Helper
                         Url = new Uri(configuration["SwaggerDetails:Contact:Url"]),
                     }
                 };
+                options.SwaggerDoc("v1", apiInfo);
 
                 var securityScheme = new OpenApiSecurityScheme()
                 {

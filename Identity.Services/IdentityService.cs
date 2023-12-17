@@ -61,7 +61,8 @@ namespace Identity.Services
                 throw new ValidationException(string.Join("\n", errors));
             }
 
-            if (roles == null || !roles.Any()
+            if (roles == null 
+                || !roles.Any()
                 || roles.All(string.IsNullOrWhiteSpace)
                 || roles.Contains("string"))
                 roles = new List<string> { "Member" };

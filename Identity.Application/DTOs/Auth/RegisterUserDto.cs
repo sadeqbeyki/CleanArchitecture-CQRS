@@ -36,6 +36,9 @@ public class RegisterUserDto
     public string Password { get; set; }
     public string ConfirmationPassword { get; set; }
     public List<string> Roles { get; set; }
-
+}
+public class UpdateUserDto : RegisterUserDto
+{
+    public string Id { get; set; }
 }
 

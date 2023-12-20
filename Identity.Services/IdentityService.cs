@@ -47,6 +47,7 @@ namespace Identity.Services
         public async Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterUserDto userDto)
         {
             var user = _mapper.Map<ApplicationUser>(userDto);
+
             var result = await _userManager.CreateAsync(user, userDto.Password);
 
             if (!result.Succeeded)
@@ -268,14 +269,21 @@ namespace Identity.Services
         #endregion
 
         #region Account
-        public async Task<bool> SigninUserAsync(LoginUserDto dto)
+        public async Task<bool> SigninUserAsync(LoginUserDto request)
         {
-            var result = await _signInManager.PasswordSignInAsync(dto.Username, dto.Password, true, false);
-            if (!result.Succeeded)
+            var user = await _userManager.FindByNameAsync(request.Username)
+                ?? throw new BadRequestException("User Doesn't exist!");
+
+            if (user.UserName == request.Username)
             {
-                throw new NotFoundException("user is not allowed");
+                var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, true, false);
+                if (!result.Succeeded)
+                {
+                    throw new NotFoundException("user is not allowed");
+                }
+                return result.Succeeded;
             }
-            return result.Succeeded;
+            throw new BadRequestException("User Not Found!");
         }
 
         #endregion

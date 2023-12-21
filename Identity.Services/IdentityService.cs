@@ -91,15 +91,14 @@ namespace Identity.Services
             user.Email,
             user.PhoneNumber)).ToList();
         }
-        public async Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsAsync(string userId)
+        public async Task<UserDetailsDto> GetUserDetailsAsync(string userId)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null)
-            {
-                throw new NotFoundException("User not found");
-            }
-            var roles = await _userManager.GetRolesAsync(user);
-            return (user.Id, user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, roles);
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId)
+                ?? throw new NotFoundException("User not found");
+
+            var userMap = _mapper.Map<UserDetailsDto>(user);
+            userMap.Roles = await _userManager.GetRolesAsync(user);
+            return userMap;
         }
         public async Task<bool> UpdateUser(string id, string firstName, string lastName, string email, IList<string> roles)
         {
@@ -372,7 +371,7 @@ namespace Identity.Services
                 return userDetails;
             }
 
-            return null;
+            throw new NotFoundException("User not found");
         }
 
         public async Task<ApplicationUser> GetUserByNameAsync(string userName)

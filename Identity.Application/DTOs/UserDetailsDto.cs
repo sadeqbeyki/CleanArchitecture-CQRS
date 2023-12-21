@@ -52,6 +52,7 @@ public class UserDetailsDto
 
     [Required(ErrorMessage = "RequiredField", AllowEmptyStrings = false)]
     [DisplayName("Role")]
+    public IList<string> Roles { get; set; }
     public string Role { get; set; }
     #endregion
 }

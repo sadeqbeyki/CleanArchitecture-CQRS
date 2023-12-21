@@ -21,7 +21,7 @@ namespace Identity.Application.Interface
 
         //User
         Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterUserDto userDto);
-        Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsAsync(string userId);
+        Task<UserDetailsDto> GetUserDetailsAsync(string userId);
         Task<List<(string id, string userName, string firstName, string lastName, string email, string phoneNumber)>> GetAllUsersAsync();
         Task<bool> UpdateUser(string id, string firstName, string lastName, string email, IList<string> roles);
         Task<bool> DeleteUserAsync(string userId);

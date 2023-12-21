@@ -49,7 +49,7 @@ namespace EndPoint.Api.Controllers
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetUserDetails(string userId)
         {
-            var result = await _mediator.Send(new GetUserDetailsQuery() { UserId = userId });
+            var result = await _mediator.Send(new GetUserDetailsQuery(userId));
             return Ok(result);
         }
 

@@ -6,7 +6,7 @@ using MediatR;
 namespace Identity.Application.Features.User.QueryHandlers
 {
     public sealed class GetUserDetailsQueryHandler :
-        IRequestHandler<GetUserDetailsQuery, UserDetailsResponseDto>
+        IRequestHandler<GetUserDetailsQuery, UserDetailsDto>
     {
         private readonly IIdentityService _identityService;
 
@@ -15,20 +15,11 @@ namespace Identity.Application.Features.User.QueryHandlers
             _identityService = identityService;
         }
 
-        public async Task<UserDetailsResponseDto> Handle(GetUserDetailsQuery request, CancellationToken cancellationToken)
+        public async Task<UserDetailsDto> Handle(GetUserDetailsQuery request, CancellationToken cancellationToken)
         {
-            var (userId, userName, firstName, lastName, email, phoneNumber, roles) =
-                await _identityService.GetUserDetailsAsync(request.UserId);
-            return new UserDetailsResponseDto()
-            {
-                Id = userId,
-                FirstName = firstName,
-                LastName = lastName,
-                UserName = userName,
-                Email = email,
-                PhoneNumber = phoneNumber,
-                Roles = roles
-            };
+            var user = await _identityService.GetUserDetailsAsync(request.UserId);
+
+            return user;
         }
     }
 }

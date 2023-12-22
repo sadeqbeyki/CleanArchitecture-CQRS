@@ -11,8 +11,8 @@ namespace EndPoint.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin, Manager")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(Roles = "Admin, Manager")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -31,14 +31,14 @@ namespace EndPoint.Api.Controllers
         }
 
         [HttpGet("GetAll")]
-        [ProducesDefaultResponseType(typeof(List<UserResponseDto>))]
-         public async Task<IActionResult> GetAllUserAsync()
+        [ProducesDefaultResponseType(typeof(List<UserDetailsDto>))]
+        public async Task<IActionResult> GetAllUserAsync()
         {
             return Ok(await _mediator.Send(new GetUsersQuery()));
         }
 
         [HttpGet("GetAllUserDetails")]
-        [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
+        [ProducesDefaultResponseType(typeof(UserDetailsDto))]
         public async Task<IActionResult> GetAllUserDetails()
         {
             var result = await _mediator.Send(new GetAllUsersDetailsQuery());

@@ -1,9 +1,6 @@
 ﻿using Identity.Application.DTOs;
 using MediatR;
 
-namespace Identity.Application.Features.User.Queries
-{
-    public class GetUsersQuery : IRequest<List<UserResponseDto>>
-    {
-    }
-}
+namespace Identity.Application.Features.User.Queries;
+
+public record GetUsersQuery : IRequest<List<UserDetailsDto>>;

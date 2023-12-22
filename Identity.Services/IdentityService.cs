@@ -70,26 +70,11 @@ namespace Identity.Services
             }
             return (result.Succeeded, user.Id);
         }
-        public async Task<List<(string id, string userName, string firstName, string lastName, string email, string phoneNumber)>> GetAllUsersAsync()
+        public async Task<List<UserDetailsDto>> GetAllUsersAsync()
         {
-            var users = await _userManager.Users.Select(x => new
-            {
-                x.Id,
-                x.UserName,
-                x.FirstName,
-                x.LastName,
-                x.Email,
-                x.PhoneNumber
-            }).ToListAsync();
-
-            return users.Select(user =>
-            (
-            user.Id,
-            user.UserName,
-            user.FirstName,
-            user.LastName,
-            user.Email,
-            user.PhoneNumber)).ToList();
+            var users = await _userManager.Users.ToListAsync();
+            var result = _mapper.Map<List<UserDetailsDto>>(users);
+            return result;
         }
         public async Task<UserDetailsDto> GetUserDetailsAsync(string userId)
         {

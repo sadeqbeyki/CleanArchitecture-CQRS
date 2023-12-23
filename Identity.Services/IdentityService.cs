@@ -17,7 +17,7 @@ namespace Identity.Services
 {
     public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private new readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
@@ -117,31 +117,27 @@ namespace Identity.Services
         public async Task<string> GetUserNameAsync(string userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null)
-            {
-                throw new NotFoundException("User not found");
-                //throw new Exception("User not found");
-            }
-            return await _userManager.GetUserNameAsync(user);
+            return user == null
+                ? throw new NotFoundException("User not found")
+                : await _userManager.GetUserNameAsync(user)
+                 ?? throw new NotFoundException("");
         }
         public async Task<string> GetUserIdAsync(string userName)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
-            if (user == null)
-            {
-                throw new NotFoundException("User not found");
-            }
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(x => x.UserName == userName)
+                    ?? throw new NotFoundException("User not found");
+
             return await _userManager.GetUserIdAsync(user);
         }
-        public async Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName)
+        public async Task<UserDetailsDto> GetUserByUserNameAsync(string userName)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
-            if (user == null)
-            {
-                throw new NotFoundException("User not found");
-            }
-            var roles = await _userManager.GetRolesAsync(user);
-            return (user.Id, user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, roles);
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName)
+                ?? throw new NotFoundException("User not found");
+            var userMap = _mapper.Map<UserDetailsDto>(user);
+
+            userMap.Roles = await _userManager.GetRolesAsync(user);
+            return userMap;
         }
         public async Task<bool> IsUniqueUserName(string userName)
         {
@@ -160,7 +156,7 @@ namespace Identity.Services
             }
             return result.Succeeded;
         }
-        public async Task<List<(string id, string roleName)>> GetRolesAsync()
+        public async Task<List<(string id, string? roleName)>> GetRolesAsync()
         {
             var roles = await _roleManager.Roles.Select(x => new
             {
@@ -179,7 +175,8 @@ namespace Identity.Services
         {
             if (roleName != null)
             {
-                var role = await _roleManager.FindByIdAsync(id);
+                var role = await _roleManager.FindByIdAsync(id)
+                    ?? throw new NotFoundException();
                 role.Name = roleName;
                 var result = await _roleManager.UpdateAsync(role);
                 return result.Succeeded;
@@ -231,18 +228,16 @@ namespace Identity.Services
         }
         public async Task<bool> AssignUserToRole(string userName, IList<string> roles)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
-            if (user == null)
-            {
-                throw new NotFoundException("User not found");
-            }
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName)
+                ?? throw new NotFoundException("User not found");
 
             var result = await _userManager.AddToRolesAsync(user, roles);
             return result.Succeeded;
         }
         public async Task<bool> UpdateUsersRole(string userName, IList<string> usersRole)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _userManager.FindByNameAsync(userName)
+                ?? throw new NotFoundException("cant find user"); ;
             var existingRoles = await _userManager.GetRolesAsync(user);
             var result = await _userManager.RemoveFromRolesAsync(user, existingRoles);
             result = await _userManager.AddToRolesAsync(user, usersRole);
@@ -293,7 +288,9 @@ namespace Identity.Services
                 allJtiClaims = allJtiClaims.TakeLast(4).ToList();
             }
 
-            SigningCredentials credentials = new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtOptions.SecretKey)), SecurityAlgorithms.HmacSha256);
+            SigningCredentials credentials = new(new SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
+                    SecurityAlgorithms.HmacSha256);
 
             DateTime tokenExpireOn = DateTime.Now.AddHours(3);
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?
@@ -309,16 +306,18 @@ namespace Identity.Services
             IList<string> rolesOfUser = await _userManager.GetRolesAsync(user);
 
             // Add new claims
-            List<Claim> tokenClaims = new List<Claim>
+            string userName = user.UserName
+                ?? throw new NotFoundException("cant find user");
+            List<Claim> tokenClaims = new()
             {
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Role, rolesOfUser.FirstOrDefault() ?? "Member"),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+                new(JwtRegisteredClaimNames.Sub, user.UserName),
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Role, rolesOfUser.FirstOrDefault() ?? "Member"),
             };
 
             // Make JWT token
-            JwtSecurityToken token = new JwtSecurityToken(
+            JwtSecurityToken token = new(
                 issuer: jwtOptions.Issuer,
                 audience: jwtOptions.Audience,
                 claims: tokenClaims.Union(allJtiClaims),
@@ -327,14 +326,17 @@ namespace Identity.Services
             );
 
             // Set current user details for busines & common library
-            var currentUser = await _userManager.FindByEmailAsync(user.Email);
+            string userEmail = user.Email
+                ?? throw new NotFoundException("cant find user");
+            var currentUser = await _userManager.FindByEmailAsync(user.Email)
+                ?? throw new NotFoundException("cant find user");
 
             // Update claim details
             await _userManager.RemoveClaimsAsync(currentUser, toRemoveClaims);
             await _userManager.AddClaimsAsync(currentUser, tokenClaims);
 
             // Return it
-            JwtTokenDto generatedToken = new JwtTokenDto
+            JwtTokenDto generatedToken = new()
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 ExpireOn = tokenExpireOn,
@@ -363,9 +365,11 @@ namespace Identity.Services
             if (userName != null)
             {
                 var user = await _userManager.FindByNameAsync(userName);
-                return user;
+                if (user != null)
+                    return user;
+                throw new BadRequestException("user not found");
             }
-            return null;
+            throw new BadRequestException("cant search for nul value!");
         }
 
         public async Task<ApplicationUser> GetUserByIdAsync(string id)

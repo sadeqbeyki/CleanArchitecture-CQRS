@@ -11,7 +11,6 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
 {
     private readonly IProductDbContext _productDbContext;
     private readonly IUserServiceACL _userServiceACL;
-    private readonly IIdentityService _identityService;
 
     public CreateProductCommandHandler(
         IProductDbContext productDbContext,

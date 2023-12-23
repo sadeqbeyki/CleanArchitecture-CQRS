@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Identity.Application.Common.Exceptions;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace Identity.Application.DTOs.Attributes
@@ -22,7 +23,7 @@ namespace Identity.Application.DTOs.Attributes
             // let the Required attribute take care of this validation
             if (string.IsNullOrWhiteSpace(input))
             {
-                return null;
+                throw new BadRequestException("null value");
             }
 
             Guid guid;
@@ -33,7 +34,7 @@ namespace Identity.Application.DTOs.Attributes
             }
 
             // For valid GUID
-            return null;
+            throw new BadRequestException("null value");
         }
     }
 }

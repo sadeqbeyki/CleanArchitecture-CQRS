@@ -8,7 +8,7 @@ namespace Identity.Application.Interface
     {
         //Role
         Task<bool> CreateRoleAsync(string roleName);
-        Task<List<(string id, string roleName)>> GetRolesAsync();
+        Task<List<(string id, string? roleName)>> GetRolesAsync();
         Task<(string id, string roleName)> GetRoleByIdAsync(string id);
         Task<bool> UpdateRole(string id, string roleName);
         Task<bool> DeleteRoleAsync(string roleId);
@@ -27,9 +27,9 @@ namespace Identity.Application.Interface
         Task<bool> DeleteUserAsync(string userId);
 
         //User more option
-        Task<string> GetUserIdAsync(string userName);
         Task<string> GetUserNameAsync(string userId);
-        Task<(string userId, string userName, string firstName, string lastName, string email, string phoneNumber, IList<string> roles)> GetUserDetailsByUserNameAsync(string userName);
+        Task<string> GetUserIdAsync(string userName);
+        Task<UserDetailsDto> GetUserByUserNameAsync(string userName);
         Task<bool> IsUniqueUserName(string userName);
 
         Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user);

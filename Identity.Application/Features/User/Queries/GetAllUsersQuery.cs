@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Identity.Application.Features.User.Queries;
 
-public record GetAllUsersDetailsQuery: IRequest<List<UserDetailsDto>>;
+public record GetAllUsersQuery: IRequest<List<UserDetailsDto>>;
 

@@ -15,7 +15,7 @@ namespace Identity.Application.Features.User.CommandHandlers
 
         public async Task<int> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await _identityService.UpdateUser(request.dto);
+            var user = await _identityService.UpdateUserAsync(request.dto);
             return user ? 1 : 0;
         }
     }

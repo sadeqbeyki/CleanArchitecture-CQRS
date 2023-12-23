@@ -5,17 +5,17 @@ using MediatR;
 
 namespace Identity.Application.Features.User.QueryHandlers
 {
-    public sealed class GetAllUsersDetailsQueryHandler :
-        IRequestHandler<GetAllUsersDetailsQuery, List<UserDetailsDto>>
+    public sealed class GetAllUsersQueryHandler :
+        IRequestHandler<GetAllUsersQuery, List<UserDetailsDto>>
     {
         private readonly IIdentityService _identityService;
 
-        public GetAllUsersDetailsQueryHandler(IIdentityService identityService)
+        public GetAllUsersQueryHandler(IIdentityService identityService)
         {
             _identityService = identityService;
         }
 
-        public async Task<List<UserDetailsDto>> Handle(GetAllUsersDetailsQuery request, CancellationToken cancellationToken)
+        public async Task<List<UserDetailsDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
             var users = await _identityService.GetAllUsersAsync();
 

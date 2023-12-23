@@ -30,24 +30,17 @@ namespace EndPoint.Api.Controllers
             return Ok(await _mediator.Send(command));
         }
 
-        [HttpGet("GetAll")]
-        [ProducesDefaultResponseType(typeof(List<UserDetailsDto>))]
-        public async Task<IActionResult> GetAllUserAsync()
-        {
-            return Ok(await _mediator.Send(new GetUsersQuery()));
-        }
-
         [HttpGet("GetAllUserDetails")]
         [ProducesDefaultResponseType(typeof(UserDetailsDto))]
-        public async Task<IActionResult> GetAllUserDetails()
+        public async Task<IActionResult> GetAllUsersAsync()
         {
-            var result = await _mediator.Send(new GetAllUsersDetailsQuery());
+            var result = await _mediator.Send(new GetAllUsersQuery());
             return Ok(result);
         }
 
         [HttpGet("GetUserDetails/{userId}")]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
-        public async Task<IActionResult> GetUserDetails(string userId)
+        public async Task<IActionResult> GetUserAsync(string userId)
         {
             var result = await _mediator.Send(new GetUserDetailsQuery(userId));
             return Ok(result);
@@ -55,7 +48,7 @@ namespace EndPoint.Api.Controllers
 
         [HttpGet("GetUserDetailsByUserName/{userName}")]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
-        public async Task<IActionResult> GetUserDetailsByUserName(string userName)
+        public async Task<IActionResult> GetUserByUserName(string userName)
         {
             var result = await _mediator.Send(new GetUserDetailsByUserNameQuery() { Username = userName });
             return Ok(result);
@@ -63,7 +56,7 @@ namespace EndPoint.Api.Controllers
 
         [HttpPut("UpdateUser/{id}")]
         [ProducesDefaultResponseType(typeof(int))]
-        public async Task<ActionResult> EditUserProfile(string id, [FromBody] UpdateUserCommand command)
+        public async Task<ActionResult> UpdateUserAsync(string id, [FromBody] UpdateUserCommand command)
         {
             if (id == command.dto.Id)
             {
@@ -78,7 +71,7 @@ namespace EndPoint.Api.Controllers
 
         [HttpDelete("Delete/{userId}")]
         [ProducesDefaultResponseType(typeof(int))]
-        public async Task<IActionResult> DeleteUser(string userId)
+        public async Task<IActionResult> DeleteUserAsync(string userId)
         {
             var result = await _mediator.Send(new DeleteUserCommand() { Id = userId });
             return Ok(result);

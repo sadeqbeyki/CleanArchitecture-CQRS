@@ -76,7 +76,7 @@ namespace Identity.Services
             var result = _mapper.Map<List<UserDetailsDto>>(users);
             return result;
         }
-        public async Task<UserDetailsDto> GetUserDetailsAsync(string userId)
+        public async Task<UserDetailsDto> GetUserAsync(string userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId)
                 ?? throw new NotFoundException("User not found");
@@ -85,14 +85,14 @@ namespace Identity.Services
             userMap.Roles = await _userManager.GetRolesAsync(user);
             return userMap;
         }
-        public async Task<bool> UpdateUser(UpdateUserDto dto)
+        public async Task<bool> UpdateUserAsync(UpdateUserDto dto)
         {
             var user = await _userManager.FindByIdAsync(dto.Id)
                 ?? throw new NotFoundException("user not found");
 
             _mapper.Map(dto, user);
             var result = await _userManager.UpdateAsync(user);
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 throw new BadRequestException("cant update this user");
             }
@@ -100,17 +100,13 @@ namespace Identity.Services
         }
         public async Task<bool> DeleteUserAsync(string userId)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user == null)
-            {
-                throw new NotFoundException("User not found");
-                //throw new Exception("User not found");
-            }
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId)
+                ?? throw new NotFoundException("User not found");
 
-            if (user.UserName == "system" || user.UserName == "admin")
+            var isUserAdmin = await _userManager.IsInRoleAsync(user, "admin");
+            if (isUserAdmin)
             {
-                throw new Exception("You can not delete system or admin user");
-                //throw new BadRequestException("You can not delete system or admin user");
+                throw new BadRequestException("You can not delete system or admin user");
             }
             var result = await _userManager.DeleteAsync(user);
             return result.Succeeded;

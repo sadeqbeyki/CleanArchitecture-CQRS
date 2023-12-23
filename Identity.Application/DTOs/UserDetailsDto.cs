@@ -18,6 +18,16 @@ public class UserDetailsDto
     public string UserName { get; set; }
 
     [Required(ErrorMessage = "RequiredField", AllowEmptyStrings = false)]
+    [DisplayName("First Name")]
+    [StringLength(40, MinimumLength = 2, ErrorMessage = "StringMinMaxLength")]
+    public string FirstName { get; set; }
+
+    [Required(ErrorMessage = "RequiredField", AllowEmptyStrings = false)]
+    [DisplayName("Last Name")]
+    [StringLength(40, MinimumLength = 2, ErrorMessage = "StringMinMaxLength")]
+    public string LastName { get; set; }
+
+    [Required(ErrorMessage = "RequiredField", AllowEmptyStrings = false)]
     [EmailAddress(ErrorMessage = "InvalidMailId")]
     [Display(Name = "Email Address")]
     [DataType(DataType.EmailAddress)]
@@ -30,16 +40,6 @@ public class UserDetailsDto
     [DisplayName("Phone Number")]
     [DataType(DataType.PhoneNumber)]
     public string PhoneNumber { get; set; }
-
-    [Required(ErrorMessage = "RequiredField", AllowEmptyStrings = false)]
-    [DisplayName("First Name")]
-    [StringLength(40, MinimumLength = 2, ErrorMessage = "StringMinMaxLength")]
-    public string FirstName { get; set; }
-
-    [Required(ErrorMessage = "RequiredField", AllowEmptyStrings = false)]
-    [DisplayName("Last Name")]
-    [StringLength(40, MinimumLength = 2, ErrorMessage = "StringMinMaxLength")]
-    public string LastName { get; set; }
     #endregion
 
     #region Additional Fields

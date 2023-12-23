@@ -1,11 +1,6 @@
 ﻿using Identity.Application.Features.User.Commands;
 using Identity.Application.Interface;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Identity.Application.Features.User.CommandHandlers
 {
@@ -20,12 +15,7 @@ namespace Identity.Application.Features.User.CommandHandlers
 
         public async Task<int> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await _identityService.UpdateUser(
-                request.Id,
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.Roles);
+            var user = await _identityService.UpdateUser(request.dto);
             return user ? 1 : 0;
         }
     }

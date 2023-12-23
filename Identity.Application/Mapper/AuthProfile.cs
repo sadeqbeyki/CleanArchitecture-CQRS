@@ -10,7 +10,7 @@ namespace Identity.Application.Mapper
     {
         public AuthProfile()
         {
-            CreateMap<ApplicationUser, UserDetailsResponseDto>();
+            CreateMap<UpdateUserDto, ApplicationUser>();
             CreateMap<ApplicationUser, UserDetailsDto>()
                 .ForMember(dest => dest.UserId, options => options.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Culture, options => options.MapFrom(src => (SupportedCulture)src.Culture));

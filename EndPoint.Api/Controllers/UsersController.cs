@@ -65,7 +65,7 @@ namespace EndPoint.Api.Controllers
         [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> EditUserProfile(string id, [FromBody] UpdateUserCommand command)
         {
-            if (id == command.Id)
+            if (id == command.dto.Id)
             {
                 var result = await _mediator.Send(command);
                 return Ok(result);

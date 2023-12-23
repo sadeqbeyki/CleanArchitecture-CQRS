@@ -23,7 +23,7 @@ namespace Identity.Application.Interface
         Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterUserDto userDto);
         Task<UserDetailsDto> GetUserDetailsAsync(string userId);
         Task<List<UserDetailsDto>> GetAllUsersAsync();
-        Task<bool> UpdateUser(string id, string firstName, string lastName, string email, IList<string> roles);
+        Task<bool> UpdateUser(UpdateUserDto userDto);
         Task<bool> DeleteUserAsync(string userId);
 
         //User more option

@@ -85,14 +85,17 @@ namespace Identity.Services
             userMap.Roles = await _userManager.GetRolesAsync(user);
             return userMap;
         }
-        public async Task<bool> UpdateUser(string id, string firstName, string lastName, string email, IList<string> roles)
+        public async Task<bool> UpdateUser(UpdateUserDto dto)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            user.FirstName = firstName;
-            user.LastName = lastName;
-            user.Email = email;
-            var result = await _userManager.UpdateAsync(user);
+            var user = await _userManager.FindByIdAsync(dto.Id)
+                ?? throw new NotFoundException("user not found");
 
+            _mapper.Map(dto, user);
+            var result = await _userManager.UpdateAsync(user);
+            if(!result.Succeeded)
+            {
+                throw new BadRequestException("cant update this user");
+            }
             return result.Succeeded;
         }
         public async Task<bool> DeleteUserAsync(string userId)

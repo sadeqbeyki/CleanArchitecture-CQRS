@@ -1,19 +1,5 @@
-﻿using MediatR;
+﻿using Identity.Application.DTOs.Auth;
+using MediatR;
 
 namespace Identity.Application.Features.User.Commands;
-public class UpdateUserCommand : IRequest<int>
-{
-    public string Id { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
-    public List<string> Roles { get; set; }
-}
-
-//public record UpdateUserCommands(
-//    string id,
-//    string firstName,
-//    string LastName,
-//    string email,
-//    List<string> roles) : IRequest<int>;
-
+public record UpdateUserCommand(UpdateUserDto dto) : IRequest<int>;

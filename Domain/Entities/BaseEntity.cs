@@ -1,12 +1,12 @@
 ﻿namespace Domain.Entities;
 
-public class BaseEntity
+public class BaseEntity<T>
 {
-    public int Id { get; private set; }
-    public DateTime ProduceDate { get; private set; }
+    public T Id { get; private set; }/* = default!;*/
+    public DateTime CreatedAt { get; private set; }
 
     public BaseEntity()
     {
-        ProduceDate = DateTime.Now;
+        CreatedAt = DateTime.Now;
     }
 }

@@ -9,4 +9,7 @@ public sealed class NotFoundException : Exception
     public NotFoundException(int id)
     : base($"The product with the id '{id}' not found.")
     { }
+    public NotFoundException(Guid id)
+: base($"The product with the id '{id}' not found.")
+    { }
 }

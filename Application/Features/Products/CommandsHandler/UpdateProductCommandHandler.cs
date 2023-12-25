@@ -9,7 +9,7 @@ using Persistance;
 
 namespace Application.Features.Products.CommandsHandler;
 
-public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, int>
+public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Guid>
 {
     private readonly IProductDbContext _productDbContext;
     private readonly IUserServiceACL _userServiceACL;
@@ -21,7 +21,7 @@ public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductC
         _userServiceACL = userServiceACL;
     }
 
-    public async Task<int> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         var product = await _productDbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
 

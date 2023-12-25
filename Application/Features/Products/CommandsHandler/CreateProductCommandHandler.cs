@@ -7,7 +7,7 @@ using Persistance;
 
 namespace Application.Features.Products.CommandsHandler;
 
-public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, int>
+public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
 {
     private readonly IProductDbContext _productDbContext;
     private readonly IUserServiceACL _userServiceACL;
@@ -20,7 +20,7 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
         _userServiceACL = userServiceACL;
     }
 
-    public async Task<int> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
         var user = await _userServiceACL.GetCurrentUser();
         var product = new Product(

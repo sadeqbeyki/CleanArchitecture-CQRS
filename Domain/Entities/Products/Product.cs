@@ -2,7 +2,7 @@
 
 namespace Domain.Entities.Products;
 
-public class Product : BaseEntity<string>
+public class Product : BaseEntity<Guid>
 {
     [Required][StringLength(100)]
     public string Name { get; private set; }

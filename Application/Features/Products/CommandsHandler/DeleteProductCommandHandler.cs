@@ -8,7 +8,7 @@ using Persistance;
 
 namespace Application.Features.Products.CommandsHandler;
 
-public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, int>
+public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Guid>
 {
     private readonly IProductDbContext _productDbContext;
     private readonly IUserServiceACL _userServiceACL;
@@ -20,7 +20,7 @@ public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductC
         _userServiceACL = userServiceACL;
     }
 
-    public async Task<int> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
         var product = await _productDbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id)
             ?? throw new NotFoundException(nameof(Product), request.Id);

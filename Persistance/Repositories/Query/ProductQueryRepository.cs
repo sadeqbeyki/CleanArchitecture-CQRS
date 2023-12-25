@@ -5,7 +5,7 @@ using Persistance.Repositories.Query.Base;
 
 namespace Persistance.Repositories.Query
 {
-    public class ProductQueryRepository : QueryRepository<Product, int>, IProductQueryRepository
+    public class ProductQueryRepository : QueryRepository<Product, Guid>, IProductQueryRepository
     {
         public ProductQueryRepository(ProductDbContext dbContext) : base(dbContext)
         {

@@ -1,9 +1,9 @@
 ﻿using MediatR;
 
 namespace Application.Features.Products.Commands;
-public class DeleteProductCommand : IRequest<int>
+public class DeleteProductCommand : IRequest<Guid>
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 };
 
 

@@ -45,7 +45,7 @@ namespace EndPoint.Api.Controllers
         }
 
         [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
             return Ok(result);
@@ -74,7 +74,7 @@ namespace EndPoint.Api.Controllers
         }
 
         [HttpDelete("DeleteProduct/{id}")]
-        public async Task<IActionResult> DeleteProduct(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new DeleteProductCommand { Id = id }, cancellationToken);
             return Ok(result);

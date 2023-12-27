@@ -6,12 +6,13 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace EndPoint.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Member")]
     public class ProductsController : ControllerBase
     {
@@ -36,11 +37,11 @@ namespace EndPoint.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetProductsByEmail/{email}")]
+        [HttpGet("GetProductsByEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetProductsByEmail(string userEmail)
+        public async Task<IActionResult> GetProductsByEmail([FromQuery] string email)
         {
-            var result = await _mediator.Send(new GetProductsByUserNameQuery(userEmail));
+            var result = await _mediator.Send(new GetProductsByUserNameQuery(email));
             return Ok(result);
         }
 
@@ -60,7 +61,7 @@ namespace EndPoint.Api.Controllers
         }
 
         [HttpPut("UpdateProduct/{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody]UpdateProductCommand updateCommand,
+        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductCommand updateCommand,
             CancellationToken cancellationToken)
         {
             var user = await _userServiceACL.GetCurrentUserByClaimAsync(User);

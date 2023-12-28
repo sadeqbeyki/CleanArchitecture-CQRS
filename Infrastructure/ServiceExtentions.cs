@@ -1,11 +1,15 @@
 ﻿using Application.Interface.Query;
-using Domain.Repositories.Queries;
+using Domain.Entities.Products;
+using Domain.Interface;
+using Domain.Interface.Queries;
 using Infrastructure.ACL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistance;
+using Persistance.Repositories;
 using Persistance.Repositories.Query;
 using Services.Queries;
 
@@ -15,20 +19,18 @@ public static class ServiceExtentions
 {
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        //services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
-        //services.AddDbContext<ProductDbContext>(options =>
-        //{
-        //    options.UseSqlServer("Data Source=localhost;Initial Catalog=NadinSoftDB;Integrated Security=True");
-        //});
-
         services.AddDbContext<ProductDbContext>(option =>
             option.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IProductDbContext, ProductDbContext>();
-        services.AddScoped<IUserServiceACL, UserServiceACL>();
+
+        //services.AddScoped<IUnitOfWork, UnitOfWork>();
+        //services.AddScoped<IRepository<Product, Guid>, Repository<Product, Guid>>();
+
         services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
         services.AddScoped<IProductQueryService, ProductQueryService>();
+
+        services.AddScoped<IUserServiceACL, UserServiceACL>();
 
     }
     public static void CreateDatabase(this IApplicationBuilder app)

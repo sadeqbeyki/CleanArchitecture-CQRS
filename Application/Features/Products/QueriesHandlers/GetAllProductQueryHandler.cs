@@ -1,20 +1,21 @@
-﻿using Application.Features.Products.Queries;
-using Domain.Entities.Products;
+﻿using Application.DTOs;
+using Application.Features.Products.Queries;
+using Application.Interface.Query;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Persistance;
 
 namespace Application.Features.Products.QueriesHandlers;
-public class GetAllProductQueryHandler : IRequestHandler<GetAllProductQuery, IEnumerable<Product>>
+public class GetAllProductQueryHandler : IRequestHandler<GetAllProductQuery, IEnumerable<ProductDetailsDto>>
 {
-    private readonly IProductDbContext _productDbContext;
+    private readonly IProductQueryService _productQueryService;
 
-    public GetAllProductQueryHandler(IProductDbContext productDbContext)
-        => _productDbContext = productDbContext;
-
-    public async Task<IEnumerable<Product>> Handle(GetAllProductQuery request, CancellationToken cancellationToken)
+    public GetAllProductQueryHandler(IProductQueryService productQueryService)
     {
-        var result = await _productDbContext.Products.ToListAsync(cancellationToken);
+        _productQueryService = productQueryService;
+    }
+
+    public async Task<IEnumerable<ProductDetailsDto>> Handle(GetAllProductQuery request, CancellationToken cancellationToken)
+    {
+        var result = _productQueryService.GetProducts();
         return result;
     }
 }

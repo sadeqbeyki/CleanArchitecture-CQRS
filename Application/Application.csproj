@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Behaviors\Messaging\" />
-    <Folder Include="Mapper\" />
   </ItemGroup>
 
 </Project>

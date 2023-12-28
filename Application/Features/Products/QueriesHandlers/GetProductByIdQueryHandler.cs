@@ -1,28 +1,23 @@
-﻿using Application.Exceptions;
+﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Features.Products.Queries;
+using Application.Interface.Query;
 using Domain.Entities.Products;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Persistance;
 
 namespace Application.Features.Products.QueriesHandlers;
-public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, Product>
+public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductDetailsDto>
 {
-    private readonly IProductDbContext _productDbContext;
+    private readonly IProductQueryService _productQueryService;
 
-    public GetProductByIdQueryHandler(IProductDbContext productDbContext)
-        => _productDbContext = productDbContext;
+    public GetProductByIdQueryHandler(IProductQueryService productQueryService)
+        => _productQueryService = productQueryService;
 
-    public async Task<Product> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ProductDetailsDto> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await _productDbContext.Products
-            .Where(p => p.Id == request.Id).FirstOrDefaultAsync();
-        if (result == null)
-        {
-            throw new NotFoundException(nameof(Product), request.Id);
-        }
+        var result = await _productQueryService.GetProductById(request.Id)
+            ?? throw new NotFoundException(nameof(Product), request.Id);
         return result;
     }
-
 }
 

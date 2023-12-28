@@ -1,4 +1,5 @@
 using Application;
+using Application.Mapper;
 using Autofac.Core;
 using EndPoint.Api.Helper;
 using Identity.Application;

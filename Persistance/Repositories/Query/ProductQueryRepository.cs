@@ -1,14 +1,14 @@
 ﻿using Domain.Entities.Products;
-using Domain.Repositories.Queries;
+using Domain.Interface.Queries;
 using Microsoft.EntityFrameworkCore;
-using Persistance.Repositories.Query.Base;
 
-namespace Persistance.Repositories.Query
+namespace Persistance.Repositories.Query;
+
+public class ProductQueryRepository : Repository<Product, Guid>, IProductQueryRepository
 {
-    public class ProductQueryRepository : QueryRepository<Product, Guid>, IProductQueryRepository
+    //private readonly ProductDbContext _shopContext;
+    public ProductQueryRepository(ProductDbContext dbContext) : base(dbContext)
     {
-        public ProductQueryRepository(ProductDbContext dbContext) : base(dbContext)
-        {
-        }
+        //_shopContext = dbContext;
     }
 }

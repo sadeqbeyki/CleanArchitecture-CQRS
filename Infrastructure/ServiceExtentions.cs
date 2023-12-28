@@ -1,4 +1,5 @@
-﻿using Application.Interface.Query;
+﻿using Application.Interface.Command;
+using Application.Interface.Query;
 using Application.Mapper;
 using Domain.Entities.Products;
 using Domain.Interface;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Persistance;
 using Persistance.Repositories;
 using Persistance.Repositories.Query;
+using Services.Command;
 using Services.Queries;
 
 namespace Infrastructure;
@@ -29,6 +31,7 @@ public static class ServiceExtentions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
+        services.AddScoped<IProductCommandService, ProductCommandService>();
         services.AddScoped<IProductQueryService, ProductQueryService>();
 
         services.AddScoped<IUserServiceACL, UserServiceACL>();

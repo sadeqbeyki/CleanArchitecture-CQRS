@@ -35,12 +35,5 @@ namespace Services.Queries
             var mapProduct = _mapper.Map<List<ProductDetailsDto>>(product).ToList();
             return mapProduct;
         }
-
-        //public void CreateProduct(Product product)
-        //{
-        //    // Perform business logic and repository operations using _productRepository...
-
-        //    _unitOfWork.Commit();
-        //}
     }
 }

@@ -1,12 +1,18 @@
 ﻿namespace Application.DTOs
 {
-    public class ProductDetailsDto
+    public class ProductDetailsDto : ProductDto
     {
         public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string Name { get; set; }
-        public string ManufacturerPhone { get; set; }
-        public string ManufacturerEmail { get; set; }
         public bool IsAvailable { get; set; }
+    }
+
+    public class AddProductDto : ProductDto
+    {
+
+    }
+    public class UpdateProductDto : ProductDto
+    {
+        public Guid Id { get; set; }
     }
 }

@@ -1,36 +1,22 @@
-﻿using Application.Features.Products.Commands;
-using Domain.Entities.Products;
-using Identity.Application.Interface;
-using Infrastructure.ACL;
+﻿using Application.DTOs;
+using Application.Features.Products.Commands;
+using Application.Interface.Command;
 using MediatR;
-using Persistance;
 
 namespace Application.Features.Products.CommandsHandler;
 
-public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
+public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDetailsDto>
 {
-    private readonly IProductDbContext _productDbContext;
-    private readonly IUserServiceACL _userServiceACL;
+    private readonly IProductCommandService _commandService;
 
-    public CreateProductCommandHandler(
-        IProductDbContext productDbContext,
-        IUserServiceACL userServiceACL)
+    public CreateProductCommandHandler(IProductCommandService commandService)
     {
-        _productDbContext = productDbContext;
-        _userServiceACL = userServiceACL;
+        _commandService = commandService;
     }
 
-    public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    public async Task<ProductDetailsDto> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userServiceACL.GetCurrentUser();
-        var product = new Product(
-            request.Name,
-            request.ManufacturerPhone,
-            user.Email);
-
-        await _productDbContext.Products.AddAsync(product);
-        await _productDbContext.SaveChangeAsync();
-
-        return product.Id;
+        var result = await _commandService.AddProduct(request.dto);
+        return result;
     }
 }

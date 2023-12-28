@@ -1,10 +1,10 @@
 ﻿using Application.DTOs;
 
-namespace Application.Interface.Query
+namespace Application.Interface.Query;
+
+public interface IProductQueryService
 {
-    public interface IProductQueryService
-    {
-        Task<ProductDetailsDto> GetProductById(Guid id);
-        List<ProductDetailsDto> GetProducts();
-    }
+    Task<ProductDetailsDto> GetProductById(Guid id);
+    List<ProductDetailsDto> GetProducts();
+    List<ProductDetailsDto> GetProductsByEmail(string email);
 }

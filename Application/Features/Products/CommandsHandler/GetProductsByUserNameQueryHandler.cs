@@ -1,4 +1,6 @@
-﻿using Application.Features.Products.Queries;
+﻿using Application.DTOs;
+using Application.Features.Products.Queries;
+using Application.Interface.Query;
 using Domain.Entities.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,20 +9,18 @@ using Persistance;
 namespace Application.Features.Products.CommandsHandler
 {
     internal sealed class GetProductsByUserNameQueryHandler 
-        : IRequestHandler<GetProductsByUserNameQuery, IEnumerable<Product>>
+        : IRequestHandler<GetProductsByUserNameQuery, IEnumerable<ProductDetailsDto>>
     {
-        private readonly IProductDbContext _productDbContext;
+        private readonly IProductQueryService _productQueryService;
 
-        public GetProductsByUserNameQueryHandler(IProductDbContext productDbContext) 
-            => _productDbContext = productDbContext;
-
-        public async Task<IEnumerable<Product>> Handle(GetProductsByUserNameQuery request, CancellationToken cancellationToken)
+        public GetProductsByUserNameQueryHandler(IProductQueryService productQueryService)
         {
-            var userEmail = request.UserEmail;
+            _productQueryService = productQueryService;
+        }
 
-            var result = await _productDbContext.Products
-                .Where(p => p.ManufacturerEmail == userEmail)
-                .ToListAsync(cancellationToken);
+        public async Task<IEnumerable<ProductDetailsDto>> Handle(GetProductsByUserNameQuery request, CancellationToken cancellationToken)
+        {
+            var result = _productQueryService.GetProductsByEmail(request.email);
 
             return result;
         }

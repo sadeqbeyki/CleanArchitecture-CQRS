@@ -1,7 +1,7 @@
-﻿using Domain.Entities.Products;
+﻿using Application.DTOs;
+using Domain.Entities.Products;
 using MediatR;
 
 namespace Application.Features.Products.Queries;
 
-public record GetProductsByUserNameQuery(string UserEmail) 
-    : IRequest<IEnumerable<Product>>;
+public record GetProductsByUserNameQuery(string email) : IRequest<IEnumerable<ProductDetailsDto>>;

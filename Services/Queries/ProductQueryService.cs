@@ -11,20 +11,15 @@ namespace Services.Queries
 {
     public class ProductQueryService : IProductQueryService
     {
-        //private readonly IProductQueryRepository _repository;
-
-        //private readonly IUnitOfWork _unitOfWork;
-        //private readonly IRepository<Product, Guid> _productRepository;
-        private readonly IProductQueryRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<Product, Guid> _productRepository;
         private readonly IMapper _mapper;
 
-        public ProductQueryService(/*IUnitOfWork unitOfWork, */IProductQueryRepository productRepository, IMapper mapper)
+        public ProductQueryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            //_unitOfWork = unitOfWork;
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
-            //_productRepository = _unitOfWork.GetRepository<Product, Guid>();
-
+            _productRepository = _unitOfWork.GetRepository<Product, Guid>();
         }
 
         public async Task<ProductDetailsDto> GetProductById(Guid id)

@@ -6,10 +6,10 @@ namespace Persistance.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly DbContext _context;
+    private readonly ProductDbContext _context;
     private Dictionary<Type, object> _repositories;
 
-    public UnitOfWork(DbContext context)
+    public UnitOfWork(ProductDbContext context)
     {
         _context = context;
         _repositories = new Dictionary<Type, object>();

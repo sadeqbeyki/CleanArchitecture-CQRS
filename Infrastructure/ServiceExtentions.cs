@@ -1,7 +1,9 @@
 ﻿using Application.Interface.Query;
+using Application.Mapper;
 using Domain.Entities.Products;
 using Domain.Interface;
 using Domain.Interface.Queries;
+using Identity.Application.Mapper;
 using Infrastructure.ACL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +26,7 @@ public static class ServiceExtentions
 
         services.AddScoped<IProductDbContext, ProductDbContext>();
 
-        //services.AddScoped<IUnitOfWork, UnitOfWork>();
-        //services.AddScoped<IRepository<Product, Guid>, Repository<Product, Guid>>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
         services.AddScoped<IProductQueryService, ProductQueryService>();

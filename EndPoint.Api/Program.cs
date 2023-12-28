@@ -30,6 +30,7 @@ builder.Services.AddCustomLocalization();
 builder.Services.AddAppSettings(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
 
 #endregion
 

@@ -6,14 +6,14 @@ using Identity.Application.DTOs;
 using Identity.Application.DTOs.Auth;
 using Identity.Persistance.Identity;
 
-namespace Application.Mapper
+namespace Application.Mapper;
+
+public class ShopProfile : Profile
 {
-    public class ShopProfile : Profile
+    public ShopProfile()
     {
-        public ShopProfile()
-        {
-            CreateMap<ProductDetailsDto, Product>();
-            CreateMap<Product, ProductDetailsDto>();
-        }
+        CreateMap<Product, ProductDetailsDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
     }
 }

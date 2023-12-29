@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Interface.Command;
 using AutoMapper;
 using Domain.Entities.Products;
@@ -35,5 +36,22 @@ public class ProductCommandService : IProductCommandService
 
         var mapProduct = _mapper.Map<ProductDetailsDto>(newProduct);
         return mapProduct;
+    }
+
+    public async Task<Guid> DeleteProduct(Guid productId)
+    {
+        var product = await _productRepository.GetByIdAsync(productId)
+             ?? throw new NotFoundException(" product not found !");
+
+        var user = await _userServiceACL.GetCurrentUser()
+            ?? throw new NotFoundException(" user not found !");
+
+        if (product.ManufacturerEmail != user.Email)
+        {
+            throw new BadRequestException("You can only delete products that you have created yourself");
+        }
+
+        var result = _productRepository.DeleteAsync(product);
+        return product.Id;
     }
 }

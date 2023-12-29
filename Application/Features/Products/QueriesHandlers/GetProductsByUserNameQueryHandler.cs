@@ -6,9 +6,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistance;
 
-namespace Application.Features.Products.CommandsHandler
+namespace Application.Features.Products.QueriesHandlers
 {
-    internal sealed class GetProductsByUserNameQueryHandler 
+    internal sealed class GetProductsByUserNameQueryHandler
         : IRequestHandler<GetProductsByUserNameQuery, IEnumerable<ProductDetailsDto>>
     {
         private readonly IProductQueryService _productQueryService;

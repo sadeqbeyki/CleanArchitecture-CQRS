@@ -18,8 +18,11 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntit
 
     public async Task<TEntity> GetByIdAsync(TKey id)
     {
-        var result = await _dbSet.FindAsync(id)
-            ?? throw new Exception($"Entity with id {id} not found.");
+        var result = await _dbSet.FindAsync(id);
+        if (result == null)
+        {
+            throw new Exception($"Entity with id {id} not found.");
+        }
         return result;
     }
     public IList<TEntity> GetAll()

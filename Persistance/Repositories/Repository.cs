@@ -25,6 +25,7 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntit
         }
         return result;
     }
+
     public IList<TEntity> GetAll()
     {
         return _dbContext.Set<TEntity>().ToList();
@@ -36,6 +37,7 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntit
         await _dbContext.SaveChangesAsync();
         return entity;
     }
+
     public async Task UpdateAsync(TEntity entity)
     {
         _dbSet.Update(entity);

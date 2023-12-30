@@ -6,6 +6,7 @@ using Domain.Entities.Products;
 using Domain.Interface;
 using Infrastructure.ACL;
 using MediatR;
+using System.Threading;
 
 namespace Services.Command;
 
@@ -32,7 +33,6 @@ public class ProductCommandService : IProductCommandService
 
         var product = new Product(dto.Name, user.PhoneNumber, user.Email);
         var newProduct = await _productRepository.CreateAsync(product);
-        _productRepository.SaveChanges();
 
         var mapProduct = _mapper.Map<ProductDetailsDto>(newProduct);
         return mapProduct;
@@ -53,5 +53,24 @@ public class ProductCommandService : IProductCommandService
 
         var result = _productRepository.DeleteAsync(product);
         return product.Id;
+    }
+
+    public async Task<Guid> UpdateProduct(UpdateProductDto dto)
+    {
+        var user = await _userServiceACL.GetCurrentUser()
+            ?? throw new NotFoundException(" user not found !");
+
+        var existProduct = await _productRepository.GetByIdAsync(dto.Id)
+            ?? throw new NotFoundException(" product not found !");
+
+        if (user.Email != existProduct.ManufacturerEmail)
+        {
+            throw new BadRequestException(" You can only edit products that you have created yourself. ");
+        }
+
+        existProduct.Edit(dto.Name,user.PhoneNumber, user.Email); 
+        var updatedProduct = _productRepository.UpdateAsync(existProduct);
+
+        return  existProduct.Id;
     }
 }

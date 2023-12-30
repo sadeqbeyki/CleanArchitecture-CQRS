@@ -1,39 +1,23 @@
-﻿using Application.Exceptions;
+﻿using Application.DTOs;
 using Application.Features.Products.Commands;
-using Domain.Entities.Products;
-using Infrastructure.ACL;
+using Application.Interface.Command;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Persistance;
 
 namespace Application.Features.Products.CommandsHandler;
 
 public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Guid>
 {
-    private readonly IProductDbContext _productDbContext;
-    private readonly IUserServiceACL _userServiceACL;
+    private readonly IProductCommandService _commandService;
 
-    public UpdateProductCommandHandler(
-        IProductDbContext productDbContext, IUserServiceACL userServiceACL)
+    public UpdateProductCommandHandler(IProductCommandService commandService)
     {
-        _productDbContext = productDbContext;
-        _userServiceACL = userServiceACL;
+        _commandService = commandService;
     }
 
     public async Task<Guid> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await _productDbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
+        var product = await _commandService.UpdateProduct(request.Dto);
 
-        if (product != null)
-        {
-            product.Edit(
-            request.Name,
-            request.ManufacturerPhone,
-            request.ManufacturerEmail);
-            await _productDbContext.SaveChangeAsync();
-            return product.Id;
-        }
-        throw new NotFoundException(nameof(Product), request.Id);
+        return product;
     }
 }

@@ -4,22 +4,32 @@ using AutoMapper;
 using Domain.Entities.Products;
 using Domain.Interface;
 using Domain.Interface.Queries;
-using Persistance.Repositories;
-using Persistance.Repositories.Query;
 
 namespace Services.Queries
 {
     public class ProductQueryService : IProductQueryService
     {
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Product, Guid> _repository;
-        private readonly IMapper _mapper;
+        private readonly IProductQueryRepository _productRepository;
 
-        public ProductQueryService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductQueryService(
+            IMapper mapper,
+            IUnitOfWork unitOfWork,
+            IProductQueryRepository productRepository)
         {
-            _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _productRepository = productRepository;
             _repository = _unitOfWork.GetRepository<Product, Guid>();
+        }
+
+        public List<ProductDetailsDto> GetProducts()
+        {
+            var products = _repository.GetAll();
+            var mapProducts = _mapper.Map<List<ProductDetailsDto>>(products).ToList();
+            return mapProducts;
         }
 
         public async Task<ProductDetailsDto> GetProductById(Guid id)
@@ -29,19 +39,19 @@ namespace Services.Queries
             return mapProduct;
         }
 
-        public List<ProductDetailsDto> GetProducts()
-        {
-            var product = _repository.GetAll();
-            var mapProduct = _mapper.Map<List<ProductDetailsDto>>(product).ToList();
-            return mapProduct;
-        }
-
         public List<ProductDetailsDto> GetProductsByEmail(string email)
         {
             var allProducts = _repository.GetAll();
-            var products =  allProducts.Where(p => p.ManufacturerEmail == email).ToList();
+            var products = allProducts.Where(p => p.ManufacturerEmail == email).ToList();
             var result = _mapper.Map<List<ProductDetailsDto>>(products);
             return result;
+        }
+
+        public async Task<List<ProductDetailsDto>> GetProductsByEmailPhone(string mailORphone)
+        {
+            var products = await _productRepository.GetProductsByName(mailORphone);
+            var mapProducts = _mapper.Map<List<ProductDetailsDto>>(products);
+            return mapProducts;
         }
     }
 }

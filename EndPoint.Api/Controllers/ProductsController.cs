@@ -41,7 +41,15 @@ namespace EndPoint.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetProductsByEmail([FromQuery] string email)
         {
-            var result = await _mediator.Send(new GetProductsByUserNameQuery(email));
+            var result = await _mediator.Send(new GetProductsByEmailQuery(email));
+            return Ok(result);
+        }
+
+        [HttpGet("GetProductsByEmailPhone")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductsByEmailPhone([FromQuery] string mailORphone)
+        {
+            var result = await _mediator.Send(new GetProductsByEmailPhoneQuery(mailORphone));
             return Ok(result);
         }
 

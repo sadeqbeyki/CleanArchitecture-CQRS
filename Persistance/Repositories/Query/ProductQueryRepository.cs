@@ -6,15 +6,16 @@ namespace Persistance.Repositories.Query;
 
 public class ProductQueryRepository : Repository<Product, Guid>, IProductQueryRepository
 {
-    private readonly ProductDbContext _productDbContext;
-    public ProductQueryRepository(ProductDbContext dbContext, ProductDbContext productDbContext) : base(dbContext)
+    private readonly ProductDbContext _dbContext;
+    public ProductQueryRepository(ProductDbContext dbContext) : base(dbContext)
     {
-        _productDbContext = productDbContext;
+        _dbContext = dbContext;
     }
 
-    public async Task<List<Product>> GetProductByEmail(string email)
+    public async Task<List<Product>> GetProductsByName(string mailORphone)
     {
-        var products = await _productDbContext.Products.Where(e => e.ManufacturerEmail == email).ToListAsync();
+        var products = await _dbContext.Products
+            .Where(p => p.ManufacturerPhone == mailORphone || p.ManufacturerEmail == mailORphone).ToListAsync();
         return products;
     }
 }

@@ -5,8 +5,6 @@ using AutoMapper;
 using Domain.Entities.Products;
 using Domain.Interface;
 using Infrastructure.ACL;
-using MediatR;
-using System.Threading;
 
 namespace Services.Command;
 
@@ -69,7 +67,7 @@ public class ProductCommandService : IProductCommandService
         }
 
         existProduct.Edit(dto.Name,user.PhoneNumber, user.Email); 
-        var updatedProduct = _productRepository.UpdateAsync(existProduct);
+        await _productRepository.UpdateAsync(existProduct);
 
         return  existProduct.Id;
     }

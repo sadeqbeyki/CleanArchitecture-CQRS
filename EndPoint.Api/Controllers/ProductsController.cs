@@ -1,6 +1,8 @@
 ﻿using Application.Features.Products.Commands;
 using Application.Features.Products.Queries;
 using Application.Interface.Query;
+using Domain.Entities.Products;
+using FluentValidation;
 using Infrastructure.ACL;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,7 +24,8 @@ namespace EndPoint.Api.Controllers
         public ProductsController(
             IMediator mediator,
             IUserServiceACL userServiceACL,
-            IProductQueryService productQueryService)
+            IProductQueryService productQueryService
+            )
         {
             _mediator = mediator;
             _userServiceACL = userServiceACL;

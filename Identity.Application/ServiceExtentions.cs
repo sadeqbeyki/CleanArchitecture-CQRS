@@ -9,5 +9,6 @@ public static class ServiceExtentions
     {
         services.AddMediatR(conf => 
             conf.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
     }
 }

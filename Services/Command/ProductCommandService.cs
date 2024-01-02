@@ -4,12 +4,17 @@ using Application.Interface.Command;
 using AutoMapper;
 using Domain.Entities.Products;
 using Domain.Interface;
+using FluentValidation;
+using FluentValidation.Results;
 using Infrastructure.ACL;
+
 
 namespace Services.Command;
 
 public class ProductCommandService : IProductCommandService
 {
+    private readonly IValidator<AddProductDto> _validator;
+
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IMapper _mapper;
@@ -17,16 +22,26 @@ public class ProductCommandService : IProductCommandService
     private readonly IUserServiceACL _userServiceACL;
 
 
-    public ProductCommandService(IUnitOfWork unitOfWork, IMapper mapper, IUserServiceACL userServiceACL)
+    public ProductCommandService(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IUserServiceACL userServiceACL,
+        IValidator<AddProductDto> validator)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _productRepository = _unitOfWork.GetRepository<Product, Guid>();
 
         _userServiceACL = userServiceACL;
+        _validator = validator;
     }
     public async Task<ProductDetailsDto> AddProduct(AddProductDto dto)
     {
+        ValidationResult result = await _validator.ValidateAsync(dto);
+        if (!result.IsValid)
+        {
+            //result.
+        }
         var user = await _userServiceACL.GetCurrentUser();
 
         var product = new Product(dto.Name, user.PhoneNumber, user.Email);
@@ -66,9 +81,9 @@ public class ProductCommandService : IProductCommandService
             throw new BadRequestException(" You can only edit products that you have created yourself. ");
         }
 
-        existProduct.Edit(dto.Name,user.PhoneNumber, user.Email); 
+        existProduct.Edit(dto.Name, user.PhoneNumber, user.Email);
         await _productRepository.UpdateAsync(existProduct);
 
-        return  existProduct.Id;
+        return existProduct.Id;
     }
 }

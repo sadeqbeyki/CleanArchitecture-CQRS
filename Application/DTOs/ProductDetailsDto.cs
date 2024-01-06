@@ -9,7 +9,7 @@
 
     public class AddProductDto : ProductDto
     {
-
+        public int categoryId { get; set; }
     }
     public class UpdateProductDto : ProductDto
     {

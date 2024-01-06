@@ -1,5 +1,5 @@
 ﻿using Application.DTOs;
-using Application.Validation;
+using Application.Validation.Products;
 using Domain.Entities.Products;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;

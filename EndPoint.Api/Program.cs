@@ -14,6 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+//_______________Ilogger - EventSource
+builder.Services.AddLogging(builder =>
+{
+    builder.AddEventSourceLogger();
+});
+
 //_______________ Add DependencyInjection
 #region DependencyInjection
 builder.Services.AddApplication();

@@ -18,6 +18,7 @@ namespace EndPoint.Api.Controllers
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Member")]
     public class ProductsController : ControllerBase
     {
+        private readonly ILogger<ProductsController> _logger;
         private readonly IMediator _mediator;
         private readonly IUserServiceACL _userServiceACL;
         private readonly IProductQueryService _productQueryService;
@@ -25,11 +26,13 @@ namespace EndPoint.Api.Controllers
             IMediator mediator,
             IUserServiceACL userServiceACL,
             IProductQueryService productQueryService
-            )
+,
+            ILogger<ProductsController> logger)
         {
             _mediator = mediator;
             _userServiceACL = userServiceACL;
             _productQueryService = productQueryService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -68,6 +71,7 @@ namespace EndPoint.Api.Controllers
             CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(createCommand, cancellationToken);
+            _logger.LogInformation("This log message will be sent to EventSource.");
             return Ok(result);
         }
 

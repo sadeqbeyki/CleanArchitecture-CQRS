@@ -39,7 +39,7 @@ public class ProductCommandService : IProductCommandService
     }
     public async Task<ProductDetailsDto> AddProduct(AddProductDto dto)
     {
-        ProductValidator validator = new();
+        //ProductValidator validator = new();
         ValidationResult results = await _validator.ValidateAsync(dto);
         if (!results.IsValid)
         {
@@ -49,7 +49,7 @@ public class ProductCommandService : IProductCommandService
             }
         }
         var user = await _userServiceACL.GetCurrentUser();
-        var product = new Product(dto.Name, user.PhoneNumber, user.Email, dto.categoryId);
+        var product = new Product(dto.Name, user.PhoneNumber, user.Email, dto.CategoryId);
         var newProduct = await _productRepository.CreateAsync(product);
 
         var mapProduct = _mapper.Map<ProductDetailsDto>(newProduct);

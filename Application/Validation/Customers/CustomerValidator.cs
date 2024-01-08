@@ -18,8 +18,8 @@ public class CustomerValidator : AbstractValidator<Customer>
             //Result would be "This message references some constant values: hello 5"
 
         //Referencing other property values:
-        RuleFor(customer => customer.Surname).NotNull()
-            .WithMessage(customer => $"This message references some other properties: Forename: {customer.Forename} Discount: {customer.Discount}");
+        //RuleFor(customer => customer.Surname).NotNull()
+        //    .WithMessage(customer => $"This message references some other properties: Forename: {customer.Forename} Discount: {customer.Discount}");
                 //Result would be: "This message references some other properties: Forename: Jeremy Discount: 100"
         
 

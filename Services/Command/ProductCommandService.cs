@@ -45,15 +45,23 @@ public class ProductCommandService : IProductCommandService
         {
             foreach (var failure in results.Errors)
             {
-                Console.WriteLine("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
+                throw new Exception("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
             }
         }
-        var user = await _userServiceACL.GetCurrentUser();
-        var product = new Product(dto.Name, user.PhoneNumber, user.Email, dto.CategoryId);
-        var newProduct = await _productRepository.CreateAsync(product);
+        else
+        {
+            var user = await _userServiceACL.GetCurrentUser();
+            var product = new Product(
+                dto.Name,
+                user.PhoneNumber,
+                user.Email,
+                dto.CategoryId);
+            var newProduct = await _productRepository.CreateAsync(product);
 
-        var mapProduct = _mapper.Map<ProductDetailsDto>(newProduct);
-        return mapProduct;
+            var mapProduct = _mapper.Map<ProductDetailsDto>(newProduct);
+            return mapProduct;
+        }
+        throw new Exception("cant ad new product");
     }
 
     public async Task<Guid> DeleteProduct(Guid productId)
@@ -86,7 +94,11 @@ public class ProductCommandService : IProductCommandService
             throw new BadRequestException(" You can only edit products that you have created yourself. ");
         }
 
-        existProduct.Edit(dto.Name, user.PhoneNumber, user.Email);
+        existProduct.Edit(
+            dto.Name,
+            user.PhoneNumber,
+            user.Email,
+            dto.CategoryId);
         await _productRepository.UpdateAsync(existProduct);
 
         return existProduct.Id;

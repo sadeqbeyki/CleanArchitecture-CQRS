@@ -1,15 +1,12 @@
 ﻿using Application.DTOs;
 using Application.Exceptions;
 using Application.Interface.Command;
-using Application.Validation.Customers;
-using Application.Validation.Products;
 using AutoMapper;
 using Domain.Entities.Products;
 using Domain.Interface;
 using FluentValidation;
 using FluentValidation.Results;
 using Infrastructure.ACL;
-
 
 namespace Services.Command;
 
@@ -39,11 +36,11 @@ public class ProductCommandService : IProductCommandService
     }
     public async Task<ProductDetailsDto> AddProduct(AddProductDto dto)
     {
-        //ProductValidator validator = new();
-        ValidationResult results = await _validator.ValidateAsync(dto);
-        if (!results.IsValid)
+        ValidationResult validationResult = await _validator.ValidateAsync(dto);
+
+        if (!validationResult.IsValid)
         {
-            foreach (var failure in results.Errors)
+            foreach (var failure in validationResult.Errors)
             {
                 throw new Exception("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
             }
@@ -61,7 +58,8 @@ public class ProductCommandService : IProductCommandService
             var mapProduct = _mapper.Map<ProductDetailsDto>(newProduct);
             return mapProduct;
         }
-        throw new Exception("cant ad new product");
+        
+        throw new Exception(" cant add new product " + validationResult.Errors.ToList());
     }
 
     public async Task<Guid> DeleteProduct(Guid productId)

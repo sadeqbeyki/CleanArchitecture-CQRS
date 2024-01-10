@@ -20,6 +20,12 @@ builder.Services.AddLogging(builder =>
     builder.AddEventSourceLogger();
 });
 
+builder.Logging.AddDbLogger(options =>
+{
+    builder.Configuration.GetSection("Logging").GetSection("Database").GetSection("Options").Bind(options);
+});
+
+
 //_______________ Add DependencyInjection
 #region DependencyInjection
 builder.Services.AddApplication();
@@ -46,6 +52,7 @@ var app = builder.Build();
 #region CreateDbWhenDosentExist
 app.CreateDatabase();
 app.CreateIdentityDatabase();
+
 #endregion
 
 // Configure the HTTP request pipeline.

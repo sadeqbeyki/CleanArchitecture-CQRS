@@ -1,6 +1,7 @@
 ﻿using Application.Interface.Command;
 using Application.Interface.Query;
 using Application.Mapper;
+using Domain.Entities.LogAgg;
 using Domain.Entities.Products;
 using Domain.Interface;
 using Domain.Interface.Queries;
@@ -11,10 +12,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Persistance;
 using Persistance.Repositories;
 using Persistance.Repositories.Query;
 using Services.Command;
+using Services.Features;
 using Services.Queries;
 
 namespace Infrastructure;
@@ -43,5 +46,12 @@ public static class ServiceExtentions
         var dataContext = serviceScope.ServiceProvider.GetRequiredService<ProductDbContext>();
         dataContext.Database.EnsureCreated();
         //dataContext.Database.Migrate();
+    }
+
+    public static ILoggingBuilder AddDbLogger(this ILoggingBuilder builder, Action<DbLoggerOption> configure)
+    {
+        builder.Services.AddSingleton<ILoggerProvider, DbLoggerProvider>();
+        builder.Services.Configure(configure);
+        return builder;
     }
 }

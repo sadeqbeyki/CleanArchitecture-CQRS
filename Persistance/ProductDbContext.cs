@@ -1,6 +1,5 @@
 ﻿using Domain.Entities.BookCategoryAgg;
 using Domain.Entities.CustomerAgg;
-using Domain.Entities.LogAgg;
 using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Configurations;
@@ -12,7 +11,6 @@ public interface IProductDbContext
     DbSet<Product> Products { get; set; }
     DbSet<ProductCategory> ProductCategories { get; set; }
     DbSet<Customer> Customers { get; set; }
-    DbSet<DbLoggerOption> DbLoggerOptions { get; set; }
 }
 
 public class ProductDbContext : DbContext, IProductDbContext
@@ -20,7 +18,6 @@ public class ProductDbContext : DbContext, IProductDbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<DbLoggerOption> DbLoggerOptions { get; set; }
 
     public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options)
     {

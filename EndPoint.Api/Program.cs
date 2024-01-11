@@ -7,6 +7,7 @@ using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
 using Infrastructure.ACL;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //_______________Ilogger - EventSource
-builder.Services.AddLogging(builder =>
-{
-    builder.AddEventSourceLogger();
-});
 
-builder.Logging.AddDbLogger(options =>
-{
-    builder.Configuration.GetSection("Logging").GetSection("Database").GetSection("Options").Bind(options);
-});
 
 
 //_______________ Add DependencyInjection

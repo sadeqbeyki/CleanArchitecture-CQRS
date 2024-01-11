@@ -17,3 +17,5 @@ internal class ProductCategoryConfigurations : IEntityTypeConfiguration<ProductC
             .HasForeignKey(p => p.CategoryId);
     }
 }
+
+

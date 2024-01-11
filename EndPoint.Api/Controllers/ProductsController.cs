@@ -7,6 +7,7 @@ using Infrastructure.ACL;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,20 +19,14 @@ namespace EndPoint.Api.Controllers
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Member")]
     public class ProductsController : ControllerBase
     {
-        private readonly ILogger<ProductsController> _logger;
         private readonly IMediator _mediator;
-        private readonly IUserServiceACL _userServiceACL;
-        private readonly IProductQueryService _productQueryService;
+        private readonly ILogger<ProductsController> _logger;
+
         public ProductsController(
-            IMediator mediator,
-            IUserServiceACL userServiceACL,
-            IProductQueryService productQueryService
-,
-            ILogger<ProductsController> logger)
+             IMediator mediator,
+             ILogger<ProductsController> logger)
         {
             _mediator = mediator;
-            _userServiceACL = userServiceACL;
-            _productQueryService = productQueryService;
             _logger = logger;
         }
 
@@ -39,8 +34,17 @@ namespace EndPoint.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetProducts()
         {
-            var result = await _mediator.Send(new GetAllProductQuery());
-            return Ok(result);
+            try
+            {
+                var result = await _mediator.Send(new GetAllProductQuery());
+                _logger.LogInformation("get productsss");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(message: ex.Message, ex);
+                return BadRequest("cant return product!");
+            }
         }
 
         [HttpGet("GetProductsByEmail")]
@@ -70,8 +74,8 @@ namespace EndPoint.Api.Controllers
         public async Task<IActionResult> CreateProduct(CreateProductCommand createCommand,
             CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(createCommand, cancellationToken);
             _logger.LogInformation("This log message will be sent to EventSource.");
+            var result = await _mediator.Send(createCommand, cancellationToken);
             return Ok(result);
         }
 

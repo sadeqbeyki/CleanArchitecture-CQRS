@@ -38,8 +38,8 @@ public static class ServiceExtentions
     {
         using var serviceScope = app.ApplicationServices.CreateScope();
         var dataContext = serviceScope.ServiceProvider.GetRequiredService<ProductDbContext>();
-        //dataContext.Database.EnsureCreated();
-        dataContext.Database.Migrate();
+        dataContext.Database.EnsureCreated();
+        //dataContext.Database.Migrate();
     }
 
 }

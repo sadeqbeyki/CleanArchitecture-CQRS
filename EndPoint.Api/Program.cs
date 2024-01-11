@@ -1,13 +1,11 @@
 using Application;
 using Application.Mapper;
-using Autofac.Core;
 using EndPoint.Api.Helper;
 using Identity.Application;
 using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
-using Infrastructure.ACL;
-using Microsoft.Extensions.Hosting;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //_______________Ilogger - EventSource
-
-
+//Add support to logging with SERILOG
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 //_______________ Add DependencyInjection
 #region DependencyInjection
@@ -51,11 +50,12 @@ app.CreateIdentityDatabase();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.UseSwagger();
     app.UseSwaggerCustom(builder.Configuration);
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
+
+app.UseSerilogRequestLogging();
 
 app.UseRouting();
 

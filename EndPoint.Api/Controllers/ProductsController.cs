@@ -66,6 +66,8 @@ namespace EndPoint.Api.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
+            _logger.LogInformation("get product by");
+
             var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
             return Ok(result);
         }

@@ -1,9 +1,11 @@
 ﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Interface.Query;
 using AutoMapper;
 using Domain.Entities.Products;
 using Domain.Interface;
 using Domain.Interface.Queries;
+using MediatR;
 
 namespace Services.Queries
 {
@@ -25,9 +27,9 @@ namespace Services.Queries
             _repository = _unitOfWork.GetRepository<Product, Guid>();
         }
 
-        public List<ProductDetailsDto> GetProducts()
+        public async Task<List<ProductDetailsDto>> GetProducts()
         {
-            var products = _repository.GetAll();
+            var products = await _repository.GetAll();
             var mapProducts = _mapper.Map<List<ProductDetailsDto>>(products).ToList();
             return mapProducts;
         }
@@ -39,10 +41,11 @@ namespace Services.Queries
             return mapProduct;
         }
 
-        public List<ProductDetailsDto> GetProductsByEmail(string email)
+        public async Task<List<ProductDetailsDto>> GetProductsByEmail(string email)
         {
-            var allProducts = _repository.GetAll();
+            var allProducts = await _repository.GetAll();
             var products = allProducts.Where(p => p.ManufacturerEmail == email).ToList();
+
             var result = _mapper.Map<List<ProductDetailsDto>>(products);
             return result;
         }

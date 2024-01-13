@@ -1,13 +1,17 @@
 using Application;
 using Application.Mapper;
 using EndPoint.Api.Helper;
+using EndPoint.Api.Middlewares;
 using Identity.Application;
 using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
 using Serilog;
+using System.Globalization;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 
@@ -40,6 +44,7 @@ builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
 
 var app = builder.Build();
 
+
 //_____________________ Create Db When Dosent Exist
 #region CreateDbWhenDosentExist
 app.CreateDatabase();
@@ -53,9 +58,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerCustom(builder.Configuration);
     app.UseSwaggerUI();
 }
+
+
 app.UseHttpsRedirection();
 
 app.UseSerilogRequestLogging();
+
+app.ConfigureLogExceptionMiddleware();
 
 app.UseRouting();
 

@@ -26,9 +26,9 @@ public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntit
         return result;
     }
 
-    public IList<TEntity> GetAll()
+    public async Task<IList<TEntity>> GetAll()
     {
-        return _dbContext.Set<TEntity>().ToList();
+        return await _dbContext.Set<TEntity>().ToListAsync();
     }
 
     public async Task<TEntity> CreateAsync(TEntity entity)

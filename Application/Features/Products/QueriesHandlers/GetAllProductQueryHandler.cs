@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Features.Products.Queries;
 using Application.Interface.Query;
 using MediatR;
@@ -15,7 +16,12 @@ public class GetAllProductQueryHandler : IRequestHandler<GetAllProductQuery, IEn
 
     public async Task<IEnumerable<ProductDetailsDto>> Handle(GetAllProductQuery request, CancellationToken cancellationToken)
     {
-        var result = _productQueryService.GetProducts();
+        var result = await _productQueryService.GetProducts();
+        if (result.Count == 0)
+        {
+            var exception = new NotFoundException($"No products found ");
+            throw exception;
+        }
         return result;
     }
 }

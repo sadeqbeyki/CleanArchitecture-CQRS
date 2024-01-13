@@ -37,13 +37,13 @@ namespace EndPoint.Api.Controllers
             try
             {
                 var result = await _mediator.Send(new GetAllProductQuery());
-                _logger.LogInformation("get productsss");
+                _logger.LogInformation("Get Products Method Called!");
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(message: ex.Message, ex);
-                return BadRequest("cant return product!");
+                return BadRequest("Cant find any product!");
             }
         }
 
@@ -66,19 +66,20 @@ namespace EndPoint.Api.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            _logger.LogInformation("get product by");
-
             var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
             return Ok(result);
         }
 
         [HttpPost("CreateProduct")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateProduct(CreateProductCommand createCommand,
             CancellationToken cancellationToken)
         {
-            _logger.LogInformation("This log message will be sent to EventSource.");
             var result = await _mediator.Send(createCommand, cancellationToken);
-            return Ok(result);
+            if (result.Id != Guid.Empty)
+                return StatusCode(StatusCodes.Status201Created);
+            return StatusCode(StatusCodes.Status400BadRequest);
         }
 
         [HttpPut("UpdateProduct/{id}")]

@@ -6,7 +6,7 @@ namespace Domain.Interface;
 public interface IRepository<TEntity, TKey> where TEntity : BaseEntity<TKey>
 {
     Task<TEntity> GetByIdAsync(TKey id);
-    IList<TEntity> GetAll();
+    Task<IList<TEntity>> GetAll();
 
     Task<TEntity> CreateAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);

@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Exceptions;
 using Application.Features.Products.Queries;
 using Application.Interface.Query;
 using MediatR;
@@ -18,7 +19,11 @@ internal sealed class GetProductsByEmailPhoneQueryHandler
     public async Task<List<ProductDetailsDto>> Handle(GetProductsByEmailPhoneQuery request, CancellationToken cancellationToken)
     {
         var result = await _productQueryService.GetProductsByEmailPhone(request.name);
-
+        if (result.Count == 0)
+        {
+            var exception = new NotFoundException($"No products were found with this {request.name} !");
+            throw exception;
+        }
         return result;
     }
 }

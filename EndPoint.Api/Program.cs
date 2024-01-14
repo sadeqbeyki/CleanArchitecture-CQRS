@@ -17,7 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-//_______________Ilogger - EventSource
+//_______________Caching
+builder.Services.AddMemoryCache();
+
+//_______________Logging
 //Add support to logging with SERILOG
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -43,7 +46,6 @@ builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
 #endregion
 
 var app = builder.Build();
-
 
 //_____________________ Create Db When Dosent Exist
 #region CreateDbWhenDosentExist

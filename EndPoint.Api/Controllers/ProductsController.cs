@@ -1,15 +1,10 @@
 ﻿using Application.Features.Products.Commands;
 using Application.Features.Products.Queries;
-using Application.Interface.Query;
-using Domain.Entities.Products;
-using FluentValidation;
-using Infrastructure.ACL;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace EndPoint.Api.Controllers
 {
@@ -21,13 +16,16 @@ namespace EndPoint.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ProductsController> _logger;
+        private readonly IMemoryCache _memoreCache;
 
         public ProductsController(
              IMediator mediator,
-             ILogger<ProductsController> logger)
+             ILogger<ProductsController> logger,
+             IMemoryCache memoreCache)
         {
             _mediator = mediator;
             _logger = logger;
+            _memoreCache = memoreCache;
         }
 
         [HttpGet]

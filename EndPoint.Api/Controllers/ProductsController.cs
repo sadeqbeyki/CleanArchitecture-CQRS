@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace EndPoint.Api.Controllers
@@ -16,16 +17,13 @@ namespace EndPoint.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ProductsController> _logger;
-        private readonly IMemoryCache _memoreCache;
 
         public ProductsController(
              IMediator mediator,
-             ILogger<ProductsController> logger,
-             IMemoryCache memoreCache)
+             ILogger<ProductsController> logger)
         {
             _mediator = mediator;
             _logger = logger;
-            _memoreCache = memoreCache;
         }
 
         [HttpGet]

@@ -1,12 +1,15 @@
 using Application;
 using Application.Mapper;
+using Autofac.Core;
 using EndPoint.Api.Helper;
 using EndPoint.Api.Middlewares;
 using Identity.Application;
 using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Serilog;
+using StackExchange.Redis;
 using System.Globalization;
 
 
@@ -18,7 +21,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //_______________Caching
-builder.Services.AddMemoryCache();
+//builder.Services.AddMemoryCache();
+
+//builder.Services.AddStackExchangeRedisCache(options => {
+//    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+//    options.InstanceName = "localRedis_";
+//});
+builder.Services.AddDistributedRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["RedisConnectionString"];
+    options.InstanceName = "localRedis_";
+});
 
 //_______________Logging
 //Add support to logging with SERILOG
@@ -42,10 +55,15 @@ builder.Services.AddAppSettings(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
+builder.Services.AddDistributedRedisCache(option =>
+{
+    option.Configuration = builder.Configuration["RedisConnectionString"];
+});
 
 #endregion
 
 var app = builder.Build();
+
 
 //_____________________ Create Db When Dosent Exist
 #region CreateDbWhenDosentExist

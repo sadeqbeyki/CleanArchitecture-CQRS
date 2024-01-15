@@ -7,8 +7,8 @@ namespace EndPoint.Api.Middlewares;
 public class LogExceptionMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly Serilog.ILogger _logger;
-    public LogExceptionMiddleware(RequestDelegate next, Serilog.ILogger logger)
+    private readonly ILogger<LogExceptionMiddleware> _logger;
+    public LogExceptionMiddleware(RequestDelegate next, ILogger<LogExceptionMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -19,11 +19,11 @@ public class LogExceptionMiddleware
         try
         {
             await _next(context);
-            _logger.Information("Everything is Ok.");
+            _logger.LogInformation("Everything is Ok.");
         }
         catch (Exception ex)
         {
-            _logger.Error($"Something went wrong: {ex}");
+            _logger.LogError($"Something went wrong: {ex}");
             await HandleExceptionAsync(context, ex);
         }
     }

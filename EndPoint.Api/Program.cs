@@ -20,18 +20,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+//_______________________________Call API
+builder.Services.AddHttpClient();
+
 //_______________Caching
+#region Cache
 //builder.Services.AddMemoryCache();
 
 //builder.Services.AddStackExchangeRedisCache(options => {
 //    options.Configuration = builder.Configuration.GetConnectionString("Redis");
 //    options.InstanceName = "localRedis_";
 //});
-builder.Services.AddDistributedRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["RedisConnectionString"];
-    options.InstanceName = "localRedis_";
-});
+#endregion
 
 //_______________Logging
 //Add support to logging with SERILOG
@@ -55,6 +55,7 @@ builder.Services.AddAppSettings(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
+
 builder.Services.AddDistributedRedisCache(option =>
 {
     option.Configuration = builder.Configuration["RedisConnectionString"];

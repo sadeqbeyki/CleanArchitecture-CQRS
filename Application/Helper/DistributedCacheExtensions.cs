@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Application.Exceptions;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 
 namespace Application.Helper

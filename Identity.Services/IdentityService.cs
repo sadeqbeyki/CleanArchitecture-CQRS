@@ -314,6 +314,7 @@ namespace Identity.Services
                 new(JwtRegisteredClaimNames.Sub, user.UserName),
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Role, rolesOfUser.FirstOrDefault() ?? "Member"),
+                //new Claim("user_role", "admin")
             };
 
             // Make JWT token

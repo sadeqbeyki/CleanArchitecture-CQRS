@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Text;
 using Identity.Application.Common.Exceptions;
 using Identity.Application.DTOs;
 using Identity.Application.DTOs.AppSettings;
@@ -11,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
+using Microsoft.Extensions.Configuration;
 
 
 namespace Identity.Services
@@ -20,6 +22,7 @@ namespace Identity.Services
         private new readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IConfiguration _config;
 
         protected readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
@@ -32,7 +35,8 @@ namespace Identity.Services
             AppSettings appSettings,
             IMapper mapper,
 
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IConfiguration config)
             : base(serviceProvider)
         {
             _userManager = userManager;
@@ -41,6 +45,7 @@ namespace Identity.Services
 
             _appSettings = appSettings;
             _mapper = mapper;
+            _config = config;
         }
 
         #region User
@@ -288,9 +293,10 @@ namespace Identity.Services
                 allJtiClaims = allJtiClaims.TakeLast(4).ToList();
             }
 
+            var secretKey = _config["JwtIssuerOptions:SecretKey"];
+
             SigningCredentials credentials = new(new SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
-                    SecurityAlgorithms.HmacSha256);
+                Encoding.UTF8.GetBytes(jwtOptions.SecretKey)), SecurityAlgorithms.HmacSha256);
 
             DateTime tokenExpireOn = DateTime.Now.AddHours(3);
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?
@@ -299,7 +305,7 @@ namespace Identity.Services
                 // If its development then set 3 years as token expiry for testing purpose
                 tokenExpireOn = DateTime.Now.AddYears(3);
             }
-
+            
             string roles = string.Join("; ", await _userManager.GetRolesAsync(user));
 
             // Obtain Role of User
@@ -319,8 +325,8 @@ namespace Identity.Services
 
             // Make JWT token
             JwtSecurityToken token = new(
-                issuer: jwtOptions.Issuer,
-                audience: jwtOptions.Audience,
+                issuer: jwtOptions.Issuer,/* _config("JwtIssuerOptions:Issuer"),*/
+                audience: jwtOptions.Audience, /*_config("JwtIssuerOptions:Audience"),*/
                 claims: tokenClaims.Union(allJtiClaims),
                 expires: tokenExpireOn,
                 signingCredentials: credentials
@@ -328,9 +334,9 @@ namespace Identity.Services
 
             // Set current user details for busines & common library
             string userEmail = user.Email
-                ?? throw new NotFoundException("cant find user");
+                ?? throw new NotFoundException("The email value cannot be empty");
             var currentUser = await _userManager.FindByEmailAsync(user.Email)
-                ?? throw new NotFoundException("cant find user");
+                ?? throw new NotFoundException("No user found with this email");
 
             // Update claim details
             await _userManager.RemoveClaimsAsync(currentUser, toRemoveClaims);

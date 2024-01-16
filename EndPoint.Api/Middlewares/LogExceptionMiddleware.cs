@@ -1,5 +1,4 @@
 ﻿using EndPoint.Api.Middlewares.Model;
-using System;
 using System.Net;
 
 namespace EndPoint.Api.Middlewares;
@@ -19,7 +18,7 @@ public class LogExceptionMiddleware
         try
         {
             await _next(context);
-            _logger.LogInformation("Everything is Ok.");
+            //_logger.LogInformation("Everything is Ok.");
         }
         catch (Exception ex)
         {

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Identity.Application.Common.Enums;
 using Identity.Application.Common.Const;
+using System.Text;
 
 namespace EndPoint.Api.Helper
 {
@@ -95,8 +96,7 @@ namespace EndPoint.Api.Helper
         public static void AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
-            SymmetricSecurityKey signingKey = new SymmetricSecurityKey(
-                System.Text.Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"]));
+            SymmetricSecurityKey signingKey = new(Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"]));
 
             services.AddAuthentication(options =>
             {

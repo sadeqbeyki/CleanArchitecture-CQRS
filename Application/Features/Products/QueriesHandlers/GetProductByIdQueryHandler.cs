@@ -10,13 +10,10 @@ namespace Application.Features.Products.QueriesHandlers;
 public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductDetailsDto>
 {
     private readonly IProductQueryService _productQueryService;
-    private readonly ILogger<GetProductByIdQueryHandler> _logger;
 
-    public GetProductByIdQueryHandler(IProductQueryService productQueryService,
-        ILogger<GetProductByIdQueryHandler> logger)
+    public GetProductByIdQueryHandler(IProductQueryService productQueryService)
     {
         _productQueryService = productQueryService;
-        _logger = logger;
     }
 
     public async Task<ProductDetailsDto> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)

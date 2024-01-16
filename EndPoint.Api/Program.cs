@@ -1,23 +1,18 @@
 using Application;
 using Application.Mapper;
-using Autofac.Core;
 using EndPoint.Api.Helper;
 using EndPoint.Api.Middlewares;
 using Identity.Application;
 using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
-using Microsoft.Extensions.Configuration;
 using Serilog;
-using StackExchange.Redis;
-using System.Globalization;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 //_______________________________Call API
@@ -34,9 +29,20 @@ builder.Services.AddHttpClient();
 #endregion
 
 //_______________Logging
+#region Logging
 //Add support to logging with SERILOG
 builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration));
+    configuration.ReadFrom.Configuration(context.Configuration)
+    );
+
+
+//Log.Logger = new LoggerConfiguration()
+//       .MinimumLevel.Debug()
+//       .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+//       .Enrich.FromLogContext()
+//       .WriteTo.File(new CompactJsonFormatter(), "log20201104.json")
+//       .CreateLogger();
+#endregion
 
 //_______________ Add DependencyInjection
 #region DependencyInjection
@@ -64,7 +70,6 @@ builder.Services.AddDistributedRedisCache(option =>
 #endregion
 
 var app = builder.Build();
-
 
 //_____________________ Create Db When Dosent Exist
 #region CreateDbWhenDosentExist

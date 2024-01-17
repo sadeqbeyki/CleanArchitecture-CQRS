@@ -33,7 +33,7 @@ public class ExternalServiceController : ControllerBase
     //        string content = await response.Content.ReadAsStringAsync();
 
     //        //var exampleUser = new WebApplication2User { Id = "1001", UserName = "Adam", SecurityStamp = DateTime.Now.ToString() };
-    //        //Log.Information("Created {@User} on {Created}", exampleUser, DateTime.Now);
+    //          _logger.LogInformation($"Get all item. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
 
     //        _logger.LogInformation($"Get all item. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
     //        return Ok(content);
@@ -99,19 +99,15 @@ public class ExternalServiceController : ControllerBase
         string apiUrl = "https://gorest.co.in/public/v2/users";
 
         HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
-        var statusCode = (int)response.StatusCode;
-        var requestMethode = HttpContext.Request.Method;
-        var requestUrl = apiUrl;
-        var clientIp = HttpContext.Connection.RemoteIpAddress;
 
         if (response.IsSuccessStatusCode)
         {
             string content = await response.Content.ReadAsStringAsync();
-            _logger.LogInformation($"Get all item. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
             return Ok(content);
         }
-        _logger.LogError($"Failed Get data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-        return BadRequest($"Failed to retrieve data from the external service. Status Code : {statusCode}");
+        throw new Exception("Failed Get data");
+        //_logger.LogError($"Failed Get data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
+        //return BadRequest($"Failed to retrieve data from the external service. Status Code : {statusCode}");
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserBy(int id)

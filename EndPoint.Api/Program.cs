@@ -22,10 +22,11 @@ builder.Services.AddHttpClient();
 #region Cache
 //builder.Services.AddMemoryCache();
 
-//builder.Services.AddStackExchangeRedisCache(options => {
-//    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-//    options.InstanceName = "localRedis_";
-//});
+builder.Services.AddDistributedRedisCache(option =>
+{
+    option.Configuration = builder.Configuration["RedisConnectionString"];
+    option.InstanceName = "localRedis_";
+});
 #endregion
 
 //_______________Logging
@@ -34,14 +35,6 @@ builder.Services.AddHttpClient();
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
     );
-
-
-//Log.Logger = new LoggerConfiguration()
-//       .MinimumLevel.Debug()
-//       .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-//       .Enrich.FromLogContext()
-//       .WriteTo.File(new CompactJsonFormatter(), "log20201104.json")
-//       .CreateLogger();
 #endregion
 
 //_______________ Add DependencyInjection
@@ -61,11 +54,6 @@ builder.Services.AddAppSettings(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
-
-builder.Services.AddDistributedRedisCache(option =>
-{
-    option.Configuration = builder.Configuration["RedisConnectionString"];
-});
 
 #endregion
 
@@ -88,7 +76,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
+app.UseCustomSerilogLogging();
 
 app.ConfigureLogExceptionMiddleware();
 

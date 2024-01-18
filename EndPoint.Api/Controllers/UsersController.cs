@@ -3,7 +3,6 @@ using Identity.Application.DTOs;
 using Identity.Application.Features.User.Commands;
 using Identity.Application.Features.User.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

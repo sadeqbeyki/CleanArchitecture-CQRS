@@ -70,7 +70,7 @@ namespace Services.Queries
             var mapProducts = _mapper.Map<List<ProductDetailsDto>>(products).ToList();
 
             var cacheKey = "Get_All_Products";
-            List<ProductDetailsDto> allProducts = new();
+            //List<ProductDetailsDto> allProducts = new();
             var data = await _distributedCache.GetRecordAsync<List<ProductDetailsDto>>(cacheKey);
 
             if (data is null)

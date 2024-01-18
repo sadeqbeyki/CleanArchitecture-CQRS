@@ -1,6 +1,8 @@
 ﻿using EndPoint.Api.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using Serilog.Context;
+using System.Net.Http;
 
 namespace EndPoint.Api.Controllers;
 
@@ -10,11 +12,14 @@ public class ExternalServiceController : ControllerBase
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<ExternalServiceController> _logger;
+    private readonly IHttpClientFactory _clientFactory;
     public ExternalServiceController(IHttpClientFactory httpClientFactory,
-        ILogger<ExternalServiceController> logger)
+        ILogger<ExternalServiceController> logger,
+        IHttpClientFactory clientFactory)
     {
         _httpClient = httpClientFactory.CreateClient();
         _logger = logger;
+        _clientFactory = clientFactory;
     }
     #region old     
     //[HttpGet]
@@ -97,7 +102,6 @@ public class ExternalServiceController : ControllerBase
     public async Task<ActionResult<List<EXUserViewModel>>> GetAllUsers()
     {
         string apiUrl = "https://gorest.co.in/public/v2/users";
-
         HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
 
         if (response.IsSuccessStatusCode)
@@ -106,9 +110,8 @@ public class ExternalServiceController : ControllerBase
             return Ok(content);
         }
         throw new Exception("Failed Get data");
-        //_logger.LogError($"Failed Get data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-        //return BadRequest($"Failed to retrieve data from the external service. Status Code : {statusCode}");
     }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserBy(int id)
     {
@@ -168,7 +171,7 @@ public class ExternalServiceController : ControllerBase
         var statusCode = (int)response.StatusCode;
         var requestUrl = apiUrl;
         var clientIp = HttpContext.Connection.RemoteIpAddress;
-        
+
         if (response.IsSuccessStatusCode)
         {
             string content = await response.Content.ReadAsStringAsync();

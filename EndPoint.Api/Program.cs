@@ -8,15 +8,14 @@ using Identity.Infrastructure;
 using Infrastructure;
 using Serilog;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 // Add services to the container.
 builder.Services.AddControllers();
 
 //_______________________________Call API
 builder.Services.AddHttpClient();
+
 
 //_______________Caching
 #region Cache

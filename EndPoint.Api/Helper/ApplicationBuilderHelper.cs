@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Http.Features;
+using Serilog;
 using Serilog.Events;
 
 namespace EndPoint.Api.Helper
@@ -45,12 +46,15 @@ namespace EndPoint.Api.Helper
                 options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
                 {
                     var request = httpContext.Request;
-                    diagnosticContext.Set("RequestUrl", $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}");
+                    //diagnosticContext.Set("RequestUrl", $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}");
+
+                    diagnosticContext.Set("Scheme", $"{request.Scheme}");
                     diagnosticContext.Set("Host", httpContext.Request.Host.Value);
                     diagnosticContext.Set("RequestPath", httpContext.Request.Path);
                     diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
                     diagnosticContext.Set("StatusCode", httpContext.Response.StatusCode);
                     diagnosticContext.Set("ClientIp", httpContext.Connection.RemoteIpAddress);
+
                 };
             });
         }

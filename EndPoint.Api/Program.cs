@@ -27,6 +27,7 @@ builder.Services.AddHttpClient();
 //    //option.InstanceName = "localRedis_";
 //});
 
+//docker run -p 6379:6379 --name -redis -d redis
 builder.Services.AddStackExchangeRedisCache(redisOption =>
 {
     var connection = builder.Configuration.GetConnectionString("Redis");

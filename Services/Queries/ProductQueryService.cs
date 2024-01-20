@@ -73,24 +73,31 @@ namespace Services.Queries
             var products = await _repository.GetAll();
             var mapProducts = _mapper.Map<List<ProductDetailsDto>>(products).ToList();
 
-            var cacheKey = "Get_All_Products";
-            //List<ProductDetailsDto> allProducts = new();
+            var cacheKey = "GetAllProducts";
             var data = await _distributedCache.GetRecordAsync<List<ProductDetailsDto>>(cacheKey);
 
             if (data is null)
             {
-                //Thread.Sleep(5000);
                 data = mapProducts.ToList();
                 await _distributedCache.SetRecordAsync(cacheKey, data, _configuration);
             }
             return data;
+            //docker run -p 6379:6379 --name -redis -d redis
         }
 
         public async Task<ProductDetailsDto> GetProductById(Guid id)
         {
             var product = await _repository.GetByIdAsync(id);
             var mapProduct = _mapper.Map<ProductDetailsDto>(product);
-            return mapProduct;
+
+            string cacheKey = $"product-{id}";
+            var data = await _distributedCache.GetRecordAsync<ProductDetailsDto>(cacheKey);
+            if (data is null)
+            {
+                data = mapProduct;
+                await _distributedCache.SetRecordAsync(cacheKey, data, _configuration);
+            }
+            return data;
         }
 
         public async Task<List<ProductDetailsDto>> GetProductsByEmail(string email)

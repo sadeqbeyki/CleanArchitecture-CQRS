@@ -9,6 +9,7 @@ using Domain.Interface.Queries;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 
 namespace Services.Queries
 {
@@ -21,6 +22,7 @@ namespace Services.Queries
 
         //private readonly IMemoryCache _memoreCache;
         private readonly IDistributedCache _distributedCache;
+        private readonly IConfiguration _configuration;
 
 
         public ProductQueryService(
@@ -28,7 +30,8 @@ namespace Services.Queries
             IUnitOfWork unitOfWork,
             IProductQueryRepository productRepository,
 
-            IDistributedCache distributedCache)
+            IDistributedCache distributedCache,
+            IConfiguration configuration)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -36,6 +39,7 @@ namespace Services.Queries
             _repository = _unitOfWork.GetRepository<Product, Guid>();
 
             _distributedCache = distributedCache;
+            _configuration = configuration;
         }
 
         //public async Task<List<ProductDetailsDto>> GetProducts()
@@ -77,7 +81,7 @@ namespace Services.Queries
             {
                 //Thread.Sleep(5000);
                 data = mapProducts.ToList();
-                await _distributedCache.SetRecordAsync(cacheKey, data);
+                await _distributedCache.SetRecordAsync(cacheKey, data, _configuration);
             }
             return data;
         }

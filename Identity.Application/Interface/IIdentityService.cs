@@ -25,6 +25,7 @@ namespace Identity.Application.Interface
         Task<List<UserDetailsDto>> GetAllUsersAsync();
         Task<bool> UpdateUserAsync(UpdateUserDto userDto);
         Task<bool> DeleteUserAsync(string userId);
+        Task<ApplicationUser?> GetMember(string id, CancellationToken cancellationToken);
 
         //User more option
         Task<string> GetUserNameAsync(string userId);

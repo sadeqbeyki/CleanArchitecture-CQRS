@@ -2,6 +2,7 @@
 using Identity.Application.DTOs;
 using Identity.Application.Features.User.Commands;
 using Identity.Application.Features.User.Queries;
+using Identity.Application.Interface;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace EndPoint.Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IIdentityService _identityService;
 
-        public UsersController(IMediator mediator)
+        public UsersController(IMediator mediator, IIdentityService identityService)
         {
             _mediator = mediator;
+            _identityService = identityService;
         }
 
         [HttpPost("Create")]
@@ -44,6 +47,7 @@ namespace EndPoint.Api.Controllers
             var result = await _mediator.Send(new GetUserDetailsQuery(userId));
             return Ok(result);
         }
+
 
         [HttpGet("GetUserDetailsByUserName/{userName}")]
         [ProducesDefaultResponseType(typeof(UserDetailsDto))]
@@ -89,6 +93,16 @@ namespace EndPoint.Api.Controllers
         public async Task<ActionResult> UpdateUserRoles(UpdateUserRolesCommand command)
         {
             var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+
+
+        [HttpGet("GetMember/{userId}")]
+        [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
+        public async Task<IActionResult> GetMemberAsync(string userId, CancellationToken cancellationToken)
+        {
+            var result = await _identityService.GetMember(userId, cancellationToken);
             return Ok(result);
         }
     }

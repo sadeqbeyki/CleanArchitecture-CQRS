@@ -21,10 +21,16 @@ builder.Services.AddHttpClient();
 #region Cache
 //builder.Services.AddMemoryCache();
 
-builder.Services.AddDistributedRedisCache(option =>
+//builder.Services.AddDistributedRedisCache(option =>
+//{
+//    option.Configuration = builder.Configuration["RedisConnectionString"];
+//    //option.InstanceName = "localRedis_";
+//});
+
+builder.Services.AddStackExchangeRedisCache(redisOption =>
 {
-    option.Configuration = builder.Configuration["RedisConnectionString"];
-    option.InstanceName = "localRedis_";
+    var connection = builder.Configuration.GetConnectionString("Redis");
+    redisOption.Configuration = connection;
 });
 #endregion
 

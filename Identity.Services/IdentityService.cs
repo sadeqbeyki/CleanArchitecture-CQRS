@@ -13,6 +13,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 using Microsoft.Extensions.Configuration;
+using AutoMapper.Execution;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 
 namespace Identity.Services
@@ -26,6 +29,7 @@ namespace Identity.Services
 
         protected readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
+        private readonly IDistributedCache _distributedCache;
 
         public IdentityService(
             UserManager<ApplicationUser> userManager,
@@ -36,7 +40,8 @@ namespace Identity.Services
             IMapper mapper,
 
             IServiceProvider serviceProvider,
-            IConfiguration config)
+            IConfiguration config,
+            IDistributedCache distributedCache)
             : base(serviceProvider)
         {
             _userManager = userManager;
@@ -46,6 +51,7 @@ namespace Identity.Services
             _appSettings = appSettings;
             _mapper = mapper;
             _config = config;
+            _distributedCache = distributedCache;
         }
 
         #region User
@@ -116,6 +122,40 @@ namespace Identity.Services
             var result = await _userManager.DeleteAsync(user);
             return result.Succeeded;
         }
+
+        public async Task<ApplicationUser?> GetMember(string id, CancellationToken cancellationToken)
+        {
+            string key = $"member-{id}";
+            string? cachedMember = await _distributedCache.GetStringAsync(key, cancellationToken);
+            ApplicationUser? member;
+            if (string.IsNullOrEmpty(cachedMember))
+            {
+                member = await _userManager.FindByIdAsync(id);
+                if (member is null)
+                {
+                    return member;
+                }
+                await _distributedCache.SetStringAsync(
+                    key,
+                    JsonConvert.SerializeObject(member),
+                    cancellationToken);
+                return member;
+            }
+            member = JsonConvert.DeserializeObject<ApplicationUser>(
+                cachedMember,
+                new JsonSerializerSettings
+                {
+                    ConstructorHandling = 
+                        ConstructorHandling.AllowNonPublicDefaultConstructor,
+                    //ContractResolver = new PrivateReslover()
+                });
+            if (member is not null)
+            {
+                //_dbContext.Set<ApplicationUser>().Attach(member);
+            }
+            return member;
+        }
+
         #endregion
 
         #region MoreUserOptions
@@ -305,7 +345,7 @@ namespace Identity.Services
                 // If its development then set 3 years as token expiry for testing purpose
                 tokenExpireOn = DateTime.Now.AddYears(3);
             }
-            
+
             string roles = string.Join("; ", await _userManager.GetRolesAsync(user));
 
             // Obtain Role of User

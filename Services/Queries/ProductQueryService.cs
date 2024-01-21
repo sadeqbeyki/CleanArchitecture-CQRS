@@ -82,7 +82,6 @@ namespace Services.Queries
                 await _distributedCache.SetRecordAsync(cacheKey, data, _configuration);
             }
             return data;
-            //docker run -p 6379:6379 --name -redis -d redis
         }
 
         public async Task<ProductDetailsDto> GetProductById(Guid id)

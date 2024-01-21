@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using AutoMapper.Execution;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Identity.Application.Helper;
+using System.Threading;
 
 
 namespace Identity.Services
@@ -25,7 +27,7 @@ namespace Identity.Services
         private new readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IConfiguration _config;
+        private readonly IConfiguration _configuration;
 
         protected readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
@@ -40,7 +42,7 @@ namespace Identity.Services
             IMapper mapper,
 
             IServiceProvider serviceProvider,
-            IConfiguration config,
+            IConfiguration configuration,
             IDistributedCache distributedCache)
             : base(serviceProvider)
         {
@@ -50,7 +52,7 @@ namespace Identity.Services
 
             _appSettings = appSettings;
             _mapper = mapper;
-            _config = config;
+            _configuration = configuration;
             _distributedCache = distributedCache;
         }
 
@@ -87,7 +89,7 @@ namespace Identity.Services
             var result = _mapper.Map<List<UserDetailsDto>>(users);
             return result;
         }
-        public async Task<UserDetailsDto> GetUserAsync(string userId)
+        public async Task<UserDetailsDto> GetUserAsync(string userId, CancellationToken cancellationToken)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId)
                 ?? throw new NotFoundException("User not found");
@@ -123,36 +125,61 @@ namespace Identity.Services
             return result.Succeeded;
         }
 
+        //public async Task<ApplicationUser?> GetMember1(string id, CancellationToken cancellationToken)
+        //{
+        //    var cacheOptions = new DistributedCacheEntryOptions
+        //    {
+        //        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10), 
+
+        //        //SlidingExpiration = TimeSpan.FromMinutes(10) 
+        //    };
+        //    string key = $"member-{id}";
+        //    string? cachedMember = await _distributedCache.GetStringAsync(key, cancellationToken);
+        //    ApplicationUser? member;
+        //    if (string.IsNullOrEmpty(cachedMember))
+        //    {
+        //        member = await _userManager.FindByIdAsync(id);
+        //        if (member is null)
+        //        {
+        //            return member;
+        //        }
+        //        await _distributedCache.SetStringAsync(
+        //            key,
+        //            JsonConvert.SerializeObject(member),
+        //            cacheOptions,
+        //            cancellationToken);
+        //        return member;
+        //    }
+        //    member = JsonConvert.DeserializeObject<ApplicationUser>(
+        //        cachedMember,
+        //        new JsonSerializerSettings
+        //        {
+        //            ConstructorHandling = 
+        //                ConstructorHandling.AllowNonPublicDefaultConstructor,
+        //            //ContractResolver = new PrivateReslover()
+        //        });
+        //    if (member is not null)
+        //    {
+        //        //_dbContext.Set<ApplicationUser>().Attach(member);
+        //    }
+        //    return member;
+        //}
+
         public async Task<ApplicationUser?> GetMember(string id, CancellationToken cancellationToken)
         {
             string key = $"member-{id}";
-            string? cachedMember = await _distributedCache.GetStringAsync(key, cancellationToken);
-            ApplicationUser? member;
-            if (string.IsNullOrEmpty(cachedMember))
+            ApplicationUser? member = await _distributedCache.GetObjectAsync<ApplicationUser>(key, cancellationToken);
+
+            if (member is null)
             {
                 member = await _userManager.FindByIdAsync(id);
-                if (member is null)
+
+                if (member is not null)
                 {
-                    return member;
+                    await _distributedCache.SetObjectAsync(key, member, _configuration, cancellationToken);
                 }
-                await _distributedCache.SetStringAsync(
-                    key,
-                    JsonConvert.SerializeObject(member),
-                    cancellationToken);
-                return member;
             }
-            member = JsonConvert.DeserializeObject<ApplicationUser>(
-                cachedMember,
-                new JsonSerializerSettings
-                {
-                    ConstructorHandling = 
-                        ConstructorHandling.AllowNonPublicDefaultConstructor,
-                    //ContractResolver = new PrivateReslover()
-                });
-            if (member is not null)
-            {
-                //_dbContext.Set<ApplicationUser>().Attach(member);
-            }
+
             return member;
         }
 
@@ -333,7 +360,7 @@ namespace Identity.Services
                 allJtiClaims = allJtiClaims.TakeLast(4).ToList();
             }
 
-            var secretKey = _config["JwtIssuerOptions:SecretKey"];
+            var secretKey = _configuration["JwtIssuerOptions:SecretKey"];
 
             SigningCredentials credentials = new(new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtOptions.SecretKey)), SecurityAlgorithms.HmacSha256);

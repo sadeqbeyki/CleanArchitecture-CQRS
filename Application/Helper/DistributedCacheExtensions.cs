@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Application.Helper
 {
-    public static class DistributedCacheExtension
+    public static class DistributedCacheExtensions
     {
         public static async Task SetRecordAsync<T>(this IDistributedCache cache, string recodeId, T data, IConfiguration configuration)
         {
@@ -36,7 +36,5 @@ namespace Application.Helper
         //    var jsonData = JsonSerializer.Serialize(data);
         //    await cache.SetStringAsync(recodeId, jsonData, options);
         //}
-
-
     }
 }

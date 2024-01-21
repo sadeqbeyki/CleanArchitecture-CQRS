@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Features.ProductCategories.Query;
 
-public record GetAllProductCategoriesQuery : IRequest<IEnumerable<ProductCategoryDto>>;
+public record GetAllProductCategoryQuery : IRequest<IEnumerable<ProductCategoryDto>>;
 

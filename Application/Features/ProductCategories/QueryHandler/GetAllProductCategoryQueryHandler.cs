@@ -7,18 +7,18 @@ using Application.Interface.Query;
 using MediatR;
 
 namespace Application.Features.ProductCategories.QueryHandler;
-public class GetAllProductCategoryQueryHandler : IRequestHandler<GetAllProductCategoriesQuery, IEnumerable<ProductCategoryDto>>
+public class GetAllProductCategoryQueryHandler : IRequestHandler<GetAllProductCategoryQuery, IEnumerable<ProductCategoryDto>>
 {
-    private readonly IProductQueryService _productQueryService;
+    private readonly IProductCategoryQueryService _productCategoryQueryService;
 
-    public GetAllProductCategoryQueryHandler(IProductQueryService productQueryService)
+    public GetAllProductCategoryQueryHandler(IProductCategoryQueryService productCategoryQueryService)
     {
-        _productQueryService = productQueryService;
+        _productCategoryQueryService = productCategoryQueryService;
     }
 
-    public async Task<IEnumerable<ProductDetailsDto>> Handle(GetAllProductQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ProductCategoryDto>> Handle(GetAllProductCategoryQuery request, CancellationToken cancellationToken)
     {
-        var result = await _productQueryService.GetProducts();
+        var result = await _productCategoryQueryService.GetProductCategories();
         if (result.Count == 0)
         {
             var exception = new NotFoundException($"No products found ");

@@ -12,6 +12,8 @@ using System.Globalization;
 using Identity.Application.Common.Enums;
 using Identity.Application.Common.Const;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using FluentValidation.Results;
 
 namespace EndPoint.Api.Helper
 {
@@ -184,6 +186,14 @@ namespace EndPoint.Api.Helper
                 opts.SupportedCultures = supportedCultures;
                 opts.SupportedUICultures = supportedCultures;
             });
+        }
+
+        public static void AddToModelState(this ValidationResult result, ModelStateDictionary modelState)
+        {
+            foreach (var error in result.Errors)
+            {
+                modelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
         }
     }
 }

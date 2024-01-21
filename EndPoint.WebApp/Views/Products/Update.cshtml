@@ -1,0 +1,44 @@
+﻿@model UpdateProductViewModel
+
+@{
+    ViewData["Title"] = "Update Product";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Update" method="post">
+
+            <div class="form-group">
+                <label asp-for="Product.Name">Product Title:</label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Product.ManufacturerPhone">Phone:</label>
+                <input asp-for="Product.ManufacturerPhone" class="form-control" />
+                <span asp-validation-for="Product.ManufacturerPhone" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Product.ManufacturerEmail">Email:</label>
+                <input asp-for="Product.ManufacturerEmail" class="form-control" />
+                <span asp-validation-for="Product.ManufacturerEmail" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Product.CategoryId">Choose a Category:</label>
+                <select class="form-control" asp-for="Product.CategoryId"
+                        asp-items='new SelectList(Model.ProductCategories, "Id", "Name")'>
+                    <option value="">Select Category</option>
+                </select>
+                <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+            </div>
+           
+            <input type="hidden" asp-for="Product.Id" value="@Model.Product.Id" />
+
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="Index" class="btn btn-secondary">Back To Book List</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+﻿@using Application.DTOs
+@model List<ProductDetailsDto>
+
+@* @{
+    Layout = "_Layout";
+} *@
+
+<div class="card">
+    <div class="card-header">
+        <h5>Product List</h5>
+    </div>
+    <div class="card-body">
+        <div class="card-title">
+            <a class="btn btn-primary btn-lg" asp-action="Create">Create Product</a>
+        </div>
+        <table id="datatable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Category Name</th>
+
+                    <th>Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+
+                        <td>@item.Name</td>
+                        <td>@item.ManufacturerPhone</td>
+                        <td>@item.ManufacturerEmail</td>
+                        <td>@item.Category</td>
+                        <td>
+                            <a class="btn btn-success pull-right m-rl-5" asp-action="Update" asp-route-id="@item.Id">
+                                <i class="fa fa-edit"></i>Update
+                            </a>
+                            <a class="btn btn-danger pull-right m-rl-5" asp-action="Delete" asp-route-id="@item.Id">
+                                <i class="fa fa-remove"></i>Delete
+                            </a>
+                            <a class="btn btn-info pull-right m-rl-5" asp-action="Details" asp-route-id="@item.Id">
+                                <i class="fa fa-info"></i>Details
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

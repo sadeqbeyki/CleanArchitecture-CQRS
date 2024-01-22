@@ -1,9 +1,9 @@
 ﻿@using Application.DTOs
 @model List<ProductDetailsDto>
 
-@* @{
-    Layout = "_Layout";
-} *@
+@{
+    ViewData["Title"] = "Product List";
+}
 
 <div class="card">
     <div class="card-header">
@@ -40,9 +40,9 @@
                             <a class="btn btn-success pull-right m-rl-5" asp-action="Update" asp-route-id="@item.Id">
                                 <i class="fa fa-edit"></i>Update
                             </a>
-                            <a class="btn btn-danger pull-right m-rl-5" asp-action="Delete" asp-route-id="@item.Id">
+                           @*  <a class="btn btn-danger pull-right m-rl-5" asp-action="Delete" asp-route-id="@item.Id">
                                 <i class="fa fa-remove"></i>Delete
-                            </a>
+                            </a> *@
                             <a class="btn btn-info pull-right m-rl-5" asp-action="Details" asp-route-id="@item.Id">
                                 <i class="fa fa-info"></i>Details
                             </a>

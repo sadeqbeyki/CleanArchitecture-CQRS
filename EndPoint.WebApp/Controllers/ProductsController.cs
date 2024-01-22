@@ -97,5 +97,24 @@ namespace EndPoint.WebApp.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        #region Delete
+        [HttpGet]
+        public async Task<ActionResult<ProductDetailsDto>> Delete(Guid id)
+        {
+            var product = await _mediator.Send(new GetProductByIdQuery { Id = id });
+            if (product == null)
+                return NotFound();
+            return View(product);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new DeleteProductCommand { Id = id }, cancellationToken);
+            return RedirectToAction("Index");
+        }
+        #endregion
     }
 }

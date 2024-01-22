@@ -69,13 +69,13 @@ public class ProductCommandService : IProductCommandService
         var product = await _productRepository.GetByIdAsync(productId)
              ?? throw new NotFoundException(" product not found !");
 
-        var user = await _userServiceACL.GetCurrentUser()
-            ?? throw new NotFoundException(" user not found !");
+        //var user = await _userServiceACL.GetCurrentUser()
+        //    ?? throw new NotFoundException(" user not found !");
 
-        if (product.ManufacturerEmail != user.Email)
-        {
-            throw new BadRequestException("You can only delete products that you have created yourself");
-        }
+        //if (product.ManufacturerEmail != user.Email)
+        //{
+        //    throw new BadRequestException("You can only delete products that you have created yourself");
+        //}
 
         var result = _productRepository.DeleteAsync(product);
         return product.Id;

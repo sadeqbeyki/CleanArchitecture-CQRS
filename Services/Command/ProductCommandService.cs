@@ -47,11 +47,13 @@ public class ProductCommandService : IProductCommandService
         }
         else
         {
-            var user = await _userServiceACL.GetCurrentUser();
+            //var user = await _userServiceACL.GetCurrentUser();
             var product = new Product(
                 dto.Name,
-                user.PhoneNumber,
-                user.Email,
+                dto.ManufacturerPhone,
+                dto.ManufacturerEmail,
+                //user.PhoneNumber,
+                //user.Email,
                 dto.CategoryId);
             var newProduct = await _productRepository.CreateAsync(product);
 

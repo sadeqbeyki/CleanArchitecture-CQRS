@@ -30,6 +30,7 @@ public static class ServiceExtentions
         services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
         services.AddScoped<IProductCommandService, ProductCommandService>();
         services.AddScoped<IProductQueryService, ProductQueryService>();
+        services.AddScoped<IProductCategoryQueryService, ProductCategoryQueryService>();
 
         services.AddScoped<IUserServiceACL, UserServiceACL>();
 

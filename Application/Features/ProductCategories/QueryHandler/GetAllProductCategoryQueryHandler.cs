@@ -1,8 +1,6 @@
-﻿using Application.DTOs;
-using Application.DTOs.ProductCategories;
+﻿using Application.DTOs.ProductCategories;
 using Application.Exceptions;
 using Application.Features.ProductCategories.Query;
-using Application.Features.Products.Queries;
 using Application.Interface.Query;
 using MediatR;
 
@@ -21,7 +19,7 @@ public class GetAllProductCategoryQueryHandler : IRequestHandler<GetAllProductCa
         var result = await _productCategoryQueryService.GetProductCategories();
         if (result.Count == 0)
         {
-            var exception = new NotFoundException($"No products found ");
+            var exception = new NotFoundException($"No product categories found ");
             throw exception;
         }
         return result;

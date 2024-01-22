@@ -37,15 +37,15 @@ public class ProductCategoryQueryService : IProductCategoryQueryService
     }
     public async Task<List<ProductCategoryDto>> GetProductCategories()
     {
-        var products = await _repository.GetAll();
-        var mapProducts = _mapper.Map<List<ProductCategoryDto>>(products).ToList();
+        var productCategories = await _repository.GetAll();
+        var mapProductCategories = _mapper.Map<List<ProductCategoryDto>>(productCategories).ToList();
 
         var cacheKey = "GetAllProductCategories";
         var data = await _distributedCache.GetRecordAsync<List<ProductCategoryDto>>(cacheKey);
 
         if (data is null)
         {
-            data = mapProducts.ToList();
+            data = mapProductCategories.ToList();
             await _distributedCache.SetRecordAsync(cacheKey, data, _configuration);
         }
         return data;

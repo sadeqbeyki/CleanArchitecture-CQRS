@@ -5,7 +5,7 @@ namespace EndPoint.WebApp.Models
 {
     public class UpdateProductViewModel
     {
-        public UpdateProductDto Product { get; set; }
+        public ProductDetailsDto Product { get; set; }
         public List<ProductCategoryDto> ProductCategories { get; set; } = new List<ProductCategoryDto>();
     }
 }

@@ -83,21 +83,23 @@ public class ProductCommandService : IProductCommandService
 
     public async Task<Guid> UpdateProduct(UpdateProductDto dto)
     {
-        var user = await _userServiceACL.GetCurrentUser()
-            ?? throw new NotFoundException(" user not found !");
+        //var user = await _userServiceACL.GetCurrentUser()
+        //    ?? throw new NotFoundException(" user not found !");
 
         var existProduct = await _productRepository.GetByIdAsync(dto.Id)
             ?? throw new NotFoundException(" product not found !");
 
-        if (user.Email != existProduct.ManufacturerEmail)
-        {
-            throw new BadRequestException(" You can only edit products that you have created yourself. ");
-        }
+        //if (user.Email != existProduct.ManufacturerEmail)
+        //{
+        //    throw new BadRequestException(" You can only edit products that you have created yourself. ");
+        //}
 
         existProduct.Edit(
             dto.Name,
-            user.PhoneNumber,
-            user.Email,
+            dto.ManufacturerPhone,
+            dto.ManufacturerEmail,
+            //user.PhoneNumber,
+            //user.Email,
             dto.CategoryId);
         await _productRepository.UpdateAsync(existProduct);
 

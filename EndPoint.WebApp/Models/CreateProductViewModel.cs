@@ -9,6 +9,7 @@ public class CreateProductViewModel
     public string ManufacturerPhone { get; set; }
     public string ManufacturerEmail { get; set; }
     public int CategoryId { get; set; }
-
+    
     public List<ProductCategoryDto> ProductCategories { get; set; } = new List<ProductCategoryDto>();
 }
+

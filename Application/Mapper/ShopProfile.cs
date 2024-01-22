@@ -14,6 +14,16 @@ public class ShopProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
 
+        // Mapping from ProductDetailsDto to UpdateProductDto
+        CreateMap<ProductDetailsDto, UpdateProductDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ReverseMap(); // Add ReverseMap for two-way mapping
+
+        //// Mapping from UpdateProductDto to Product
+        //CreateMap<UpdateProductDto, Product>()
+        //    .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
+
+
         CreateMap<ProductCategory, ProductCategoryDto>();
     }
 }

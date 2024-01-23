@@ -18,6 +18,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Identity.Application.Helper;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 namespace Identity.Services
@@ -331,7 +333,26 @@ namespace Identity.Services
                 {
                     throw new NotFoundException("user is not allowed");
                 }
+                await _signInManager.SignInAsync(user, isPersistent: false);
                 return result.Succeeded;
+            }
+            throw new BadRequestException("User Not Found!");
+        }
+
+        public async Task<ApplicationUser> SigninUser(LoginUserDto request)
+        {
+            var user = await _userManager.FindByNameAsync(request.Username)
+                ?? throw new BadRequestException("User Doesn't exist!");
+
+            if (user.UserName == request.Username)
+            {
+                var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, true, false);
+                if (!result.Succeeded)
+                {
+                    throw new NotFoundException("user is not allowed");
+                }
+                //await _signInManager.SignInAsync(user, isPersistent: false);
+                return user;
             }
             throw new BadRequestException("User Not Found!");
         }
@@ -379,16 +400,31 @@ namespace Identity.Services
             IList<string> rolesOfUser = await _userManager.GetRolesAsync(user);
 
             // Add new claims
-            string userName = user.UserName
-                ?? throw new NotFoundException("cant find user");
+            string userName = user.UserName ?? throw new NotFoundException("cant find user");
             List<Claim> tokenClaims = new()
             {
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
                 new(JwtRegisteredClaimNames.Sub, user.UserName),
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Role, rolesOfUser.FirstOrDefault() ?? "Member"),
+                new(ClaimTypes.Name, user.PhoneNumber)
+
                 //new Claim("user_role", "admin")
             };
+
+
+            //adedd-------------------------------------------------------------------------
+
+            //var resultB = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, resultB.Principal);
+            //bool resultA =ClaimsPrincipal.Current.Identity.IsAuthenticated;
+            //var claim = new Claim(user.UserName, user.PasswordHash);
+            //var identity = new ClaimsIdentity(new[] { claim }, "BasicAuthentication"); // this uses basic auth
+            //var principal = new ClaimsPrincipal(identity);
+            //bool resultB = ClaimsPrincipal.Current.Identity.IsAuthenticated;
+            //adedd-------------------------------------------------------------------------
+
 
             // Make JWT token
             JwtSecurityToken token = new(
@@ -400,24 +436,47 @@ namespace Identity.Services
             );
 
             // Set current user details for busines & common library
-            string userEmail = user.Email
-                ?? throw new NotFoundException("The email value cannot be empty");
-            var currentUser = await _userManager.FindByEmailAsync(user.Email)
-                ?? throw new NotFoundException("No user found with this email");
+            string userEmail = user.Email ?? throw new NotFoundException("The email value cannot be empty");
+            var currentUser = await _userManager.FindByEmailAsync(user.Email) ?? throw new NotFoundException("No user found with this email");
 
             // Update claim details
             await _userManager.RemoveClaimsAsync(currentUser, toRemoveClaims);
-            await _userManager.AddClaimsAsync(currentUser, tokenClaims);
+            /*var claims =*/ await _userManager.AddClaimsAsync(currentUser, tokenClaims);
 
             // Return it
             JwtTokenDto generatedToken = new()
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 ExpireOn = tokenExpireOn,
-                UserDetails = await GetUserDetailsAsync(currentUser)
+                UserDetails = await GetUserDetailsAsync(currentUser),
+                User = currentUser///////////////////
             };
 
             return generatedToken;
+        }
+
+        public string GenerateJWTAuthetication(ApplicationUser user)
+        {
+            var claims = new List<Claim>
+        {
+            new Claim(JwtHeaderParameterNames.Jku, user.UserName),
+            new Claim(JwtHeaderParameterNames.Kid, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email)
+        };
+
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtIssuerOptions:SecretKey"]));
+            var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);
+            var expires = DateTime.Now.AddMinutes(2);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JwtIssuerOptions:Issuer"],
+                audience: _configuration["JwtIssuerOptions:Audience"],
+                claims,
+                expires: expires,
+                signingCredentials: signingCredentials
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public async Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user)

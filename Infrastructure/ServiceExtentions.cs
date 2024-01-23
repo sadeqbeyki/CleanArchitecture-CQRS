@@ -1,4 +1,5 @@
-﻿using Application.Interface.Command;
+﻿using Application.Interface;
+using Application.Interface.Command;
 using Application.Interface.Query;
 using Domain.Interface;
 using Domain.Interface.Queries;
@@ -12,6 +13,7 @@ using Persistance;
 using Persistance.Repositories;
 using Persistance.Repositories.Query;
 using Services.Command;
+using Services.Features;
 using Services.Queries;
 
 namespace Infrastructure;
@@ -33,6 +35,7 @@ public static class ServiceExtentions
         services.AddScoped<IProductCategoryQueryService, ProductCategoryQueryService>();
 
         services.AddScoped<IUserServiceACL, UserServiceACL>();
+        services.AddScoped<IJwtService, JWTService>();
 
     }
     public static void CreateDatabase(this IApplicationBuilder app)

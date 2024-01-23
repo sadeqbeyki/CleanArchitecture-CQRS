@@ -4,6 +4,7 @@ using Identity.Application.Features.User.Commands;
 using Identity.Application.Features.User.Queries;
 using Identity.Application.Interface;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,8 +12,8 @@ namespace EndPoint.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin, Manager")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin, Manager")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -95,7 +96,6 @@ namespace EndPoint.Api.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
-
 
 
         [HttpGet("GetMember/{userId}")]

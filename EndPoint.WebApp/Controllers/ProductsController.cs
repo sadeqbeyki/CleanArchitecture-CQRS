@@ -6,6 +6,7 @@ using Application.Interface.Query;
 using AutoMapper;
 using EndPoint.WebApp.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.WebApp.Controllers
@@ -28,6 +29,7 @@ namespace EndPoint.WebApp.Controllers
             _mapper = mapper;
         }
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<ProductDetailsDto>>> Index()
         {
             var products = await _mediator.Send(new GetAllProductQuery());

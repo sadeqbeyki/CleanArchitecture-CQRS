@@ -13,6 +13,7 @@ using Identity.Application.DTOs.AppSettings;
 using Identity.Application.Common.Enums;
 using Identity.Application.Common.Const;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace EndPoint.WebApp.Helper
 {
@@ -47,14 +48,25 @@ namespace EndPoint.WebApp.Helper
 
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+            })
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                // Configure cookie options as needed
+                options.Cookie.Name = "YourCookieName"; // Set a unique name for your cookie
+                options.ExpireTimeSpan = TimeSpan.FromHours(1); // Set the expiration time
+                options.SlidingExpiration = true; // Enable sliding expiration
             })
             .AddJwtBearer(configureOptions =>
             {
-                //configureOptions.RequireHttpsMetadata = false;
-                //configureOptions.SaveToken = true;
+                configureOptions.RequireHttpsMetadata = false;
+                configureOptions.SaveToken = true;
                 configureOptions.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,

@@ -50,7 +50,7 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddCustomCors();
+//builder.Services.AddCustomCors();
 builder.Services.AddCustomIdentity();
 builder.Services.AddCustomLocalization();
 builder.Services.AddAppSettings(builder.Configuration);
@@ -59,6 +59,10 @@ builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
 
 #endregion
+
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -69,22 +73,18 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseCustomSerilogLogging();
-
-app.ConfigureLogExceptionMiddleware();
-
+//app.UseCustomSerilogLogging();
+//app.ConfigureLogExceptionMiddleware();
 
 app.UseRouting();
-
-app.UseCors("AllowAll");
-
 app.UseAuthentication();
-
 app.UseAuthorization();
+
+//app.UseCors("AllowAll");
 
 app.MapControllerRoute(
     name: "default",

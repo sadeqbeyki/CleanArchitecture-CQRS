@@ -1,7 +1,22 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using Identity.Persistance.Identity;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <h1 class="display-4">Welcome @User.Identity.Name</h1>
+        <a asp-controller="Products" asp-action="Index">Products</a>
+    }
+    else
+    {
+        <a href="@Url.Action("Login", "Auth")" class="btn btn-primary">Login</a>
+    }
 </div>

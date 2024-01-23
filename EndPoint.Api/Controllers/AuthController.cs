@@ -3,6 +3,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Identity.Application.DTOs.Auth;
 using Identity.Application.Interface;
+using Microsoft.AspNetCore.Identity;
+using Identity.Persistance.Identity;
+using System.Security.Principal;
 
 namespace EndPoint.Api.Controllers
 {
@@ -13,7 +16,7 @@ namespace EndPoint.Api.Controllers
         private readonly IMediator _mediator;
         private readonly IIdentityService _identityService;
 
-        public AuthController(IMediator mediator, 
+        public AuthController(IMediator mediator,
             IIdentityService identityService)
         {
             _mediator = mediator;
@@ -25,7 +28,16 @@ namespace EndPoint.Api.Controllers
         [ProducesDefaultResponseType(typeof(JwtTokenDto))]
         public async Task<IActionResult> Login([FromBody] AuthCommand command)
         {
-            return Ok(await _mediator.Send(command));
+            var result = await _mediator.Send(command);
+
+            var identity = new GenericIdentity(result.User.UserName);
+            var principal = new GenericPrincipal(identity, new string[0]);
+            HttpContext.User = principal;
+            Thread.CurrentPrincipal = principal;
+
+            if (User.Identity.IsAuthenticated)
+                return Ok(result);
+            return BadRequest("faild");
         }
 
         /// <summary>

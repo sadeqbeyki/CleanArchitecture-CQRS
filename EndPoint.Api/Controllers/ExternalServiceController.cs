@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Context;
 using System.Net.Http;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EndPoint.Api.Controllers;
 
@@ -12,100 +13,20 @@ public class ExternalServiceController : ControllerBase
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<ExternalServiceController> _logger;
-    private readonly IHttpClientFactory _clientFactory;
     private readonly IConfiguration _configuration;
     public ExternalServiceController(IHttpClientFactory httpClientFactory,
         ILogger<ExternalServiceController> logger,
-        IHttpClientFactory clientFactory,
         IConfiguration configuration)
     {
         _httpClient = httpClientFactory.CreateClient();
         _logger = logger;
-        _clientFactory = clientFactory;
         _configuration = configuration;
     }
-    #region old     
-    //[HttpGet]
-    //public async Task<ActionResult<List<ExternalViewModel>>> GetAllFromExternalService()
-    //{
-    //    string apiUrl = "https://jsonplaceholder.typicode.com/posts";
-
-    //    HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
-    //    var statusCode = (int)response.StatusCode;
-    //    var requestMethode = HttpContext.Request.Method;
-    //    var requestUrl = apiUrl;
-    //    var clientIp = HttpContext.Connection.RemoteIpAddress;
-
-    //    if (response.IsSuccessStatusCode)
-    //    {
-    //        string content = await response.Content.ReadAsStringAsync();
-
-    //        //var exampleUser = new WebApplication2User { Id = "1001", UserName = "Adam", SecurityStamp = DateTime.Now.ToString() };
-    //          _logger.LogInformation($"Get all item. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-
-    //        _logger.LogInformation($"Get all item. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-    //        return Ok(content);
-    //    }
-    //    _logger.LogError($"Failed Get data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-    //    return BadRequest($"Failed to retrieve data from the external service. Status Code : {statusCode}");
-    //}
-
-    //[HttpGet("{id}")]
-    //public async Task<IActionResult> GetFromExternalService(int id)
-    //{
-    //    string apiUrl = $"https://jsonplaceholder.typicode.com/todos/{id}";
-
-    //    HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
-
-    //    var statusCode = (int)response.StatusCode;
-    //    var requestMethode = HttpContext.Request.Method;
-    //    var requestUrl = apiUrl;
-    //    var clientIp = HttpContext.Connection.RemoteIpAddress;
-
-    //    if (response.IsSuccessStatusCode)
-    //    {
-    //        string content = await response.Content.ReadAsStringAsync();
-    //        _logger.LogInformation($"Get item by id. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-
-    //        return Ok(content);
-    //    }
-    //    _logger.LogError($"Failed Get data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-    //    return BadRequest($"Failed to retrieve data from the external service. Status Code : {statusCode}");
-    //}
-
-    //[HttpPost]
-    //public async Task<IActionResult> PostToExternalService([FromBody] ExternalViewModel data)
-    //{
-    //    string apiUrl = "https://jsonplaceholder.typicode.com/posts";
-
-    //    HttpResponseMessage response = await _httpClient.PostAsJsonAsync(apiUrl, data);
-
-    //    var statusCode = (int)response.StatusCode;
-    //    var requestMethode = HttpContext.Request.Method;
-    //    var requestUrl = apiUrl;
-    //    var clientIp = HttpContext.Connection.RemoteIpAddress;
-
-    //    if (response.IsSuccessStatusCode)
-    //    {
-    //        string content = await response.Content.ReadAsStringAsync();
-    //        _logger.LogInformation($"Success post data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-
-    //        return Ok(content);
-    //    }
-    //    else
-    //    {
-    //        //_logger.LogError("Failed to post data {StatusCode}", (int)response.StatusCode);
-    //        _logger.LogError($"Failed to post data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
-    //        return BadRequest($"Failed to post data to the external service. StatusCode: {(int)response.StatusCode}");
-    //    }
-    //}
-    #endregion
 
     [HttpGet]
     public async Task<ActionResult<List<EXUserViewModel>>> GetAllUsers()
     {
-        //string GetAllUsers = _configuration.GetSection();
-        string apiUrl = "https://gorest.co.in/public/v2/users";
+        string apiUrl = _configuration["ExternalService:Api:UsersUrl"];
         HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
 
         if (response.IsSuccessStatusCode)
@@ -119,7 +40,7 @@ public class ExternalServiceController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserBy(int id)
     {
-        string apiUrl = $"https://gorest.co.in/public/v2/users/{id}";
+        string apiUrl = _configuration[$"ExternalService:Api:UsersUrl{id}"];
 
         HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
 
@@ -141,7 +62,7 @@ public class ExternalServiceController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] EXUserViewModel data)
     {
-        string apiUrl = "https://jsonplaceholder.typicode.com/posts";
+        string apiUrl = _configuration["ExternalService:Api:UsersUrl"];
 
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync(apiUrl, data);
 
@@ -167,7 +88,7 @@ public class ExternalServiceController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateUser(EXUserViewModel data)
     {
-        string apiUrl = $"https://gorest.co.in/public/v2/users/{data.id}";
+        string apiUrl = _configuration[$"ExternalService:Api:UsersUrl{data.id}"];
 
         HttpResponseMessage response = await _httpClient.PutAsJsonAsync(apiUrl, data);
 
@@ -189,7 +110,7 @@ public class ExternalServiceController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        string apiUrl = $"https://gorest.co.in/public/v2/users/{id}";
+        string apiUrl = _configuration[$"ExternalService:Api:UsersUrl{id}"];
 
         HttpResponseMessage response = await _httpClient.DeleteAsync(apiUrl);
 
@@ -208,15 +129,6 @@ public class ExternalServiceController : ControllerBase
         _logger.LogError($"Failed Get data. Status Code: {statusCode}, Request Methode: {requestMethode}, Request URL: {requestUrl}, Client IP: {clientIp}");
         return BadRequest($"Failed to retrieve data from the external service. Status Code : {statusCode}");
     }
-}
-
-public class ExternalViewModel
-{
-    public int userId { get; set; }
-    public int id { get; set; }
-    public string title { get; set; }
-    public string body { get; set; }
-    public bool completed { get; set; }
 }
 
 public class EXUserViewModel

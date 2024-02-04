@@ -13,13 +13,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 using Microsoft.Extensions.Configuration;
-using AutoMapper.Execution;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using Identity.Application.Helper;
-using System.Threading;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 namespace Identity.Services

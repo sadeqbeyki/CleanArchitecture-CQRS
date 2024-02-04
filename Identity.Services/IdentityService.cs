@@ -66,13 +66,7 @@ namespace Identity.Services
                 throw new ValidationException(string.Join("\n", errors));
             }
 
-            if (userDto.Roles == null
-                || !userDto.Roles.Any()
-                || userDto.Roles.All(string.IsNullOrWhiteSpace)
-                || userDto.Roles.Contains("string"))
-                userDto.Roles = new List<string> { "Member" };
-
-            var addUserRole = await _userManager.AddToRolesAsync(user, userDto.Roles);
+            var addUserRole = await _userManager.AddToRolesAsync(user, new List<string> { "Member" });
             if (!addUserRole.Succeeded)
             {
                 var errors = addUserRole.Errors.Select(e => e.Description);

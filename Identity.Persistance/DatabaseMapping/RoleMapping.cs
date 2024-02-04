@@ -11,13 +11,11 @@ public class RoleMapping : IEntityTypeConfiguration<ApplicationRole>
         //builder.HasKey(x => x.Id);
         //builder.ToTable("Roles");
 
-        List<ApplicationRole> applicationRoles = new(){
-                        new(){Name = "Member"},
-                        new(){Name = "Manager"},
-                        new(){Name = "Employee"},
-                        new(){Name = "Admin"}
-                    };
-
-        builder.HasData(applicationRoles);
+        builder.HasData(
+            new { Id = "1", Name = "Member", NormalizedName = "MEMBER" },
+            new { Id = "2", Name = "Manager", NormalizedName = "MANAGER" },
+            new { Id = "3", Name = "Employee", NormalizedName = "EMPLOYEE" },
+            new { Id = "4", Name = "Admin", NormalizedName = "ADMIN" });
     }
 }
+

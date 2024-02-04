@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection.Metadata;
 
 namespace Identity.Infrastructure;
 
@@ -41,57 +42,42 @@ public static class SeedDataExtention
 {
     private static readonly string[] Roles = new string[] { "Admin", "Manager", "Member" };
 
+
     public static async Task Initialize(IServiceProvider serviceProvider)
     {
-        using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        using var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        var _roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var _userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        if (await _roleManager.Roles.AnyAsync() is false)
         {
-            var dbContext = serviceScope.ServiceProvider.GetService<AppIdentityDbContext>();
-            var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            var _userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-            //if (!dbContext.Database.GetPendingMigrations().Any())
-            //{
-            //    await dbContext.Database.MigrateAsync();
-            if (!await dbContext.Roles.AnyAsync())
+            foreach (var role in Roles)
             {
-                //seed roles
-                foreach (var role in Roles)
+                if (await _roleManager.RoleExistsAsync(role) is false)
                 {
-                    if (!await roleManager.RoleExistsAsync(role))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(role));
-                    }
+                    await _roleManager.CreateAsync(new IdentityRole(role));
                 }
-                //seed users
-                ApplicationUser user = new()
-                {
-                    FirstName = "Name",
-                    LastName = "LastName",
-                    UserName = "admin",
-                    Email = "Owner@example.com",
-                    PhoneNumber = "+111111111111",
-                    EmailConfirmed = true,
-                    JoinedOn = DateTime.Now,
-                    Culture = 1,
-                    PhoneNumberConfirmed = true,
-                    SecurityStamp = Guid.NewGuid().ToString("D")
-                };
-
-                if (!await dbContext.Users.AnyAsync(u => u.UserName == user.UserName))
-                {
-                    var password = new PasswordHasher<ApplicationUser>();
-                    var hashed = password.HashPassword(user, "987654321`");
-                    user.PasswordHash = hashed;
-
-                    var userStore = new UserStore<ApplicationUser>(dbContext);
-                    var result = await userStore.CreateAsync(user);
-                }
-
-                await _userManager.AddToRolesAsync(user, Roles);
-                await dbContext.SaveChangesAsync();
-
             }
+            ApplicationUser user = new()
+            {
+                FirstName = "Name",
+                LastName = "LastName",
+                UserName = "admin",
+                Email = "Owner@example.com",
+                PhoneNumber = "+111111111111",
+                EmailConfirmed = true,
+                JoinedOn = DateTime.Now,
+                Culture = 1,
+                PhoneNumberConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString("D")
+            };
+
+            if (await _userManager.Users.AnyAsync() is false)
+            {
+                await _userManager.CreateAsync(user, "987654321`");
+            }
+
+            await _userManager.AddToRolesAsync(user, Roles);
         }
     }
 }

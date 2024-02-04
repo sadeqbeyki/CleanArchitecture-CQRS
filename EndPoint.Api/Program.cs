@@ -6,6 +6,7 @@ using Identity.Application;
 using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,6 +71,7 @@ var app = builder.Build();
 app.CreateDatabase();
 app.CreateIdentityDatabase();
 
+app.SeedData();
 #endregion
 
 // Configure the HTTP request pipeline.
@@ -78,7 +80,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerCustom(builder.Configuration);
     app.UseSwaggerUI();
 }
-
 
 app.UseHttpsRedirection();
 

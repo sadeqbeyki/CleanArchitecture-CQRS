@@ -1,4 +1,5 @@
-﻿using Identity.Persistance.Identity;
+﻿using Identity.Persistance.DatabaseMapping;
+using Identity.Persistance.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +12,11 @@ public class AppIdentityDbContext : IdentityDbContext<ApplicationUser>
     }
 
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-    }
+    //protected override void OnModelCreating(ModelBuilder modelBuilder)
+    //{
+    //    var assembly = typeof(RoleMapping).Assembly;
+    //    modelBuilder.ApplyConfigurationsFromAssembly(assembly);
+    //    base.OnModelCreating(modelBuilder);
+    //}
 
 }

@@ -34,6 +34,7 @@ namespace EndPoint.Api.Controllers
         }
 
         [HttpGet("GetAllUserDetails")]
+        [AllowAnonymous]
         [ProducesDefaultResponseType(typeof(UserDetailsDto))]
         public async Task<IActionResult> GetAllUsersAsync()
         {
@@ -99,6 +100,7 @@ namespace EndPoint.Api.Controllers
 
 
         [HttpGet("GetMember/{userId}")]
+        [AllowAnonymous]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetMemberAsync(string userId, CancellationToken cancellationToken)
         {

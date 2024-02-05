@@ -2,39 +2,32 @@
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
-namespace Application.Helper
+namespace Application.Helper;
+
+public static class DistributedCacheExtensions
 {
-    public static class DistributedCacheExtensions
+    public static async Task SetRecordAsync<T>(this IDistributedCache cache, string cacheKey, T dataValue, IConfiguration configuration)
     {
-        public static async Task SetRecordAsync<T>(this IDistributedCache cache, string recodeId, T data, IConfiguration configuration)
-        {
-            var cacheSettings = configuration.GetSection("CacheSettings");
-            DistributedCacheEntryOptions options = new()
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(double.Parse(cacheSettings["AbsoluteExpireTimeSeconds"])),
-                SlidingExpiration = TimeSpan.FromSeconds(double.Parse(cacheSettings["SlidingExpirationSeconds"]))
-            };
-
-            var jsonData = JsonSerializer.Serialize(data);
-            await cache.SetStringAsync(recodeId, jsonData, options);
-        }
-        public static async Task<T> GetRecordAsync<T>(this IDistributedCache cache, string recordId)
-        {
-            var jsonData = await cache.GetStringAsync(recordId);
-            return jsonData is null ? default : JsonSerializer.Deserialize<T>(jsonData);
-        }
-
-        //public static async Task SetRecordAsync<T>(this IDistributedCache cache, string recodeId, T data,
-        //    TimeSpan? absoluteExpireTime = null, TimeSpan? slidingExpirationTime = null)
+        //var cacheSettings = configuration.GetSection("CacheSettings");
+        //DistributedCacheEntryOptions options = new()
         //{
-        //    DistributedCacheEntryOptions options = new()
-        //    {
-        //        AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromSeconds(40),
-        //        SlidingExpiration = slidingExpirationTime ?? TimeSpan.FromSeconds(10)
-        //    };
+        //    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(double.Parse(cacheSettings["AbsoluteExpireTimeSeconds"])),
+        //    SlidingExpiration = TimeSpan.FromSeconds(double.Parse(cacheSettings["SlidingExpirationSeconds"]))
+        //};
 
-        //    var jsonData = JsonSerializer.Serialize(data);
-        //    await cache.SetStringAsync(recodeId, jsonData, options);
-        //}
+        var cacheOptions = new DistributedCacheEntryOptions()
+                .SetAbsoluteExpiration(DateTime.Now.AddSeconds(double.Parse(configuration["CacheSettings:AbsoluteExpireTimeSeconds"])))
+                .SetSlidingExpiration(TimeSpan.FromSeconds(double.Parse(configuration["CacheSettings:SlidingExpirationSeconds"])));
+
+        var jsonData = JsonSerializer.Serialize(dataValue);
+        await cache.SetStringAsync(
+            cacheKey,
+            jsonData,
+            cacheOptions);
+    }
+    public static async Task<T> GetRecordAsync<T>(this IDistributedCache distributedCache, string cacheKey)
+    {
+        var jsonData = await distributedCache.GetStringAsync(cacheKey);
+        return jsonData is null ? default : JsonSerializer.Deserialize<T>(jsonData);
     }
 }

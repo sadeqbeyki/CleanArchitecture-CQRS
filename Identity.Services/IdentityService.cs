@@ -116,45 +116,6 @@ namespace Identity.Services
             return result.Succeeded;
         }
 
-        //public async Task<ApplicationUser?> GetMember1(string id, CancellationToken cancellationToken)
-        //{
-        //    var cacheOptions = new DistributedCacheEntryOptions
-        //    {
-        //        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10), 
-
-        //        //SlidingExpiration = TimeSpan.FromMinutes(10) 
-        //    };
-        //    string key = $"member-{id}";
-        //    string? cachedMember = await _distributedCache.GetStringAsync(key, cancellationToken);
-        //    ApplicationUser? member;
-        //    if (string.IsNullOrEmpty(cachedMember))
-        //    {
-        //        member = await _userManager.FindByIdAsync(id);
-        //        if (member is null)
-        //        {
-        //            return member;
-        //        }
-        //        await _distributedCache.SetStringAsync(
-        //            key,
-        //            JsonConvert.SerializeObject(member),
-        //            cacheOptions,
-        //            cancellationToken);
-        //        return member;
-        //    }
-        //    member = JsonConvert.DeserializeObject<ApplicationUser>(
-        //        cachedMember,
-        //        new JsonSerializerSettings
-        //        {
-        //            ConstructorHandling = 
-        //                ConstructorHandling.AllowNonPublicDefaultConstructor,
-        //            //ContractResolver = new PrivateReslover()
-        //        });
-        //    if (member is not null)
-        //    {
-        //        //_dbContext.Set<ApplicationUser>().Attach(member);
-        //    }
-        //    return member;
-        //}
 
         public async Task<ApplicationUser?> GetMember(string id, CancellationToken cancellationToken)
         {
@@ -164,11 +125,8 @@ namespace Identity.Services
             if (member is null)
             {
                 member = await _userManager.FindByIdAsync(id);
-
-                if (member is not null)
-                {
-                    await _distributedCache.SetObjectAsync(key, member, _configuration, cancellationToken);
-                }
+                await _distributedCache.SetObjectAsync(key, member, _configuration, cancellationToken);
+                return member;
             }
 
             return member;
@@ -430,7 +388,8 @@ namespace Identity.Services
 
             // Update claim details
             await _userManager.RemoveClaimsAsync(currentUser, toRemoveClaims);
-            /*var claims =*/ await _userManager.AddClaimsAsync(currentUser, tokenClaims);
+            /*var claims =*/
+            await _userManager.AddClaimsAsync(currentUser, tokenClaims);
 
             // Return it
             JwtTokenDto generatedToken = new()

@@ -40,7 +40,7 @@ public class ProductCategoryQueryService : IProductCategoryQueryService
         var productCategories = await _repository.GetAll();
         var mapProductCategories = _mapper.Map<List<ProductCategoryDto>>(productCategories).ToList();
 
-        var cacheKey = "GetAllProductCategories";
+        var cacheKey = nameof(GetProductCategories); //"GetAllProductCategories"
         var data = await _distributedCache.GetRecordAsync<List<ProductCategoryDto>>(cacheKey);
 
         if (data is null)

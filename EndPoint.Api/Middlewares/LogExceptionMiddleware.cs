@@ -40,15 +40,14 @@ public class LogExceptionMiddleware
         await context.Response.WriteAsync(new ErrorDetails()
         {
             StatusCode = context.Response.StatusCode,
-            Message = message /*"Internal Server Error from the custom middleware."*/ 
+            Message = message /*"Internal Server Error from the custom middleware."*/
         }.ToString());
     }
 }
 
 public static class LogExceptionMiddlewareExtensions
 {
-    public static void ConfigureLogExceptionMiddleware(
-        this IApplicationBuilder appBuilder)
+    public static void ConfigureLogExceptionMiddleware(this IApplicationBuilder appBuilder)
     {
         appBuilder.UseMiddleware<LogExceptionMiddleware>();
     }

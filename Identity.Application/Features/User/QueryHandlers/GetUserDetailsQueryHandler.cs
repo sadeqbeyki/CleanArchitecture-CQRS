@@ -5,8 +5,7 @@ using MediatR;
 
 namespace Identity.Application.Features.User.QueryHandlers
 {
-    public sealed class GetUserDetailsQueryHandler :
-        IRequestHandler<GetUserDetailsQuery, UserDetailsDto>
+    public sealed class GetUserDetailsQueryHandler : IRequestHandler<GetUserDetailsQuery, UserDetailsDto>
     {
         private readonly IIdentityService _identityService;
 

@@ -53,6 +53,5 @@ public class UserDetailsDto
     [Required(ErrorMessage = "RequiredField", AllowEmptyStrings = false)]
     [DisplayName("Role")]
     public IList<string> Roles { get; set; } = new List<string>();  
-    public string Role { get; set; } = string.Empty;
     #endregion
 }

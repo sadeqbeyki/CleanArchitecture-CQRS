@@ -17,12 +17,10 @@ namespace EndPoint.Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IIdentityService _identityService;
 
-        public UsersController(IMediator mediator, IIdentityService identityService)
+        public UsersController(IMediator mediator)
         {
             _mediator = mediator;
-            _identityService = identityService;
         }
 
         [HttpPost("Create")]
@@ -42,6 +40,7 @@ namespace EndPoint.Api.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("GetUserDetails/{userId}")]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetUserAsync(string userId)
@@ -95,16 +94,6 @@ namespace EndPoint.Api.Controllers
         public async Task<ActionResult> UpdateUserRoles(UpdateUserRolesCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-
-
-        [HttpGet("GetMember/{userId}")]
-        [AllowAnonymous]
-        [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
-        public async Task<IActionResult> GetMemberAsync(string userId, CancellationToken cancellationToken)
-        {
-            var result = await _identityService.GetMember(userId, cancellationToken);
             return Ok(result);
         }
     }

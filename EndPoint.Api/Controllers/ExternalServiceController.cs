@@ -13,13 +13,16 @@ public class ExternalServiceController : ControllerBase
     private readonly HttpClient _httpClient;
     private readonly ILogger<ExternalServiceController> _logger;
     private readonly IHttpClientFactory _clientFactory;
+    private readonly IConfiguration _configuration;
     public ExternalServiceController(IHttpClientFactory httpClientFactory,
         ILogger<ExternalServiceController> logger,
-        IHttpClientFactory clientFactory)
+        IHttpClientFactory clientFactory,
+        IConfiguration configuration)
     {
         _httpClient = httpClientFactory.CreateClient();
         _logger = logger;
         _clientFactory = clientFactory;
+        _configuration = configuration;
     }
     #region old     
     //[HttpGet]
@@ -101,6 +104,7 @@ public class ExternalServiceController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<EXUserViewModel>>> GetAllUsers()
     {
+        //string GetAllUsers = _configuration.GetSection();
         string apiUrl = "https://gorest.co.in/public/v2/users";
         HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
 

@@ -20,19 +20,12 @@ builder.Services.AddHttpClient();
 
 //_______________Caching
 #region Cache
-//builder.Services.AddMemoryCache();
-
-//builder.Services.AddDistributedRedisCache(option =>
-//{
-//    option.Configuration = builder.Configuration["RedisConnectionString"];
-//    //option.InstanceName = "localRedis_";
-//});
-
-//docker run -p 6379:6379 --name -redis -d redis
 builder.Services.AddStackExchangeRedisCache(redisOption =>
 {
     var connection = builder.Configuration.GetConnectionString("Redis");
     redisOption.Configuration = connection;
+    redisOption.InstanceName = "localRedis_";
+
 });
 #endregion
 
@@ -84,7 +77,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 //app.UseSerilogRequestLogging();
-app.UseCustomSerilogLogging();
+app.AddCustomSerilogLogging();
 
 app.ConfigureLogExceptionMiddleware();
 

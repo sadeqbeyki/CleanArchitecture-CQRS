@@ -74,20 +74,37 @@ namespace Identity.Services
             }
             return (result.Succeeded, user.Id);
         }
-        public async Task<List<UserDetailsDto>> GetAllUsersAsync()
+        public async Task<List<UserDetailsDto>> GetAllUsersAsync(CancellationToken cancellationToken)
         {
-            var users = await _userManager.Users.ToListAsync();
-            var result = _mapper.Map<List<UserDetailsDto>>(users);
-            return result;
+            string key = nameof(GetAllUsersAsync);;
+            List<UserDetailsDto>? members = await _distributedCache.GetObjectAsync<List<UserDetailsDto>>(key, cancellationToken);
+            if (members == null)
+            {
+                var users = await _userManager.Users.ToListAsync();
+
+                members = _mapper.Map<List<UserDetailsDto>>(users);
+                await _distributedCache.SetObjectAsync(key, members, _configuration, cancellationToken);
+
+                return members;
+            }
+            return members;
         }
         public async Task<UserDetailsDto> GetUserAsync(string userId, CancellationToken cancellationToken)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId)
+            string key = $"member-{userId}";
+            UserDetailsDto? member = await _distributedCache.GetObjectAsync<UserDetailsDto>(key, cancellationToken);
+            if (member is null)
+            {
+                var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId)
                 ?? throw new NotFoundException("User not found");
 
-            var userMap = _mapper.Map<UserDetailsDto>(user);
-            userMap.Roles = await _userManager.GetRolesAsync(user);
-            return userMap;
+                member = _mapper.Map<UserDetailsDto>(user);
+                member.Roles = await _userManager.GetRolesAsync(user);
+
+                await _distributedCache.SetObjectAsync(key, member, _configuration, cancellationToken);
+                return member;
+            }
+            return member;
         }
         public async Task<bool> UpdateUserAsync(UpdateUserDto dto)
         {
@@ -116,21 +133,6 @@ namespace Identity.Services
             return result.Succeeded;
         }
 
-
-        public async Task<ApplicationUser?> GetMember(string id, CancellationToken cancellationToken)
-        {
-            string key = $"member-{id}";
-            ApplicationUser? member = await _distributedCache.GetObjectAsync<ApplicationUser>(key, cancellationToken);
-
-            if (member is null)
-            {
-                member = await _userManager.FindByIdAsync(id);
-                await _distributedCache.SetObjectAsync(key, member, _configuration, cancellationToken);
-                return member;
-            }
-
-            return member;
-        }
 
         #endregion
 
@@ -432,9 +434,7 @@ namespace Identity.Services
             if (user != null)
             {
                 var userDetails = _mapper.Map<UserDetailsDto>(user);
-
-                var currentUserRoles = await _userManager.GetRolesAsync(user);
-                userDetails.Role = currentUserRoles.FirstOrDefault() ?? string.Empty;
+                userDetails.Roles = await _userManager.GetRolesAsync(user);
                 return userDetails;
             }
 

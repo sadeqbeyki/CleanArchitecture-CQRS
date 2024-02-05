@@ -17,7 +17,7 @@ namespace Identity.Application.Features.User.QueryHandlers
 
         public async Task<List<UserDetailsDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
-            var users = await _identityService.GetAllUsersAsync();
+            var users = await _identityService.GetAllUsersAsync(cancellationToken);
 
             foreach (var user in users)
             {

@@ -12,8 +12,8 @@ using System.Globalization;
 using Identity.Application.Common.Enums;
 using Identity.Application.Common.Const;
 using System.Text;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using FluentValidation.Results;
+using Serilog;
+using Serilog.Events;
 
 namespace EndPoint.Api.Helper
 {
@@ -188,12 +188,35 @@ namespace EndPoint.Api.Helper
             });
         }
 
-        public static void AddToModelState(this ValidationResult result, ModelStateDictionary modelState)
+
+        public static void AddCustomSerilogLogging(this IApplicationBuilder app)
         {
-            foreach (var error in result.Errors)
+            app.UseSerilogRequestLogging(options =>
             {
-                modelState.AddModelError(error.PropertyName, error.ErrorMessage);
-            }
+                options.GetLevel = (httpContext, elapsed, ex) =>
+                {
+                    if (ex != null || httpContext.Response.StatusCode >= 500)
+                    {
+                        return LogEventLevel.Error;
+                    }
+
+                    return LogEventLevel.Information;
+                };
+                options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                {
+                    var request = httpContext.Request;
+                    //diagnosticContext.Set("RequestUrl", $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}");
+
+                    diagnosticContext.Set("Scheme", $"{request.Scheme}");
+                    diagnosticContext.Set("Host", httpContext.Request.Host.Value);
+                    diagnosticContext.Set("RequestPath", httpContext.Request.Path);
+                    diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
+                    diagnosticContext.Set("StatusCode", httpContext.Response.StatusCode);
+                    diagnosticContext.Set("ClientIp", httpContext.Connection.RemoteIpAddress);
+
+                };
+            });
         }
+
     }
 }

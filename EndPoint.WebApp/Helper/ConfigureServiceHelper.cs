@@ -14,6 +14,7 @@ using Identity.Application.Common.Enums;
 using Identity.Application.Common.Const;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 
 namespace EndPoint.WebApp.Helper
 {
@@ -44,40 +45,32 @@ namespace EndPoint.WebApp.Helper
         public static void AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
-            SymmetricSecurityKey signingKey = new(Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"]));
 
             services.AddAuthentication(options =>
             {
-                //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                //options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
-            })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            {
-                // Configure cookie options as needed
-                options.Cookie.Name = "YourCookieName"; // Set a unique name for your cookie
-                options.ExpireTimeSpan = TimeSpan.FromHours(1); // Set the expiration time
-                options.SlidingExpiration = true; // Enable sliding expiration
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(configureOptions =>
             {
-                configureOptions.RequireHttpsMetadata = false;
-                configureOptions.SaveToken = true;
+                configureOptions.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["Token"];
+                        return Task.CompletedTask;
+                    },
+                };
                 configureOptions.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["JwtIssuerOptions:Issuer"],
+                    ValidateAudience = true,
                     ValidAudience = configuration["JwtIssuerOptions:Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"])),
                     ValidateLifetime = true,
-                    IssuerSigningKey = signingKey,
+                    ClockSkew = TimeSpan.FromSeconds(30),
                     RequireExpirationTime = true,
-                    ClockSkew = TimeSpan.Zero
                 };
             });
         }

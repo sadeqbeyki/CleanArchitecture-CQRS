@@ -1,9 +1,4 @@
-﻿using EndPoint.Api.Helper;
-using Microsoft.AspNetCore.Mvc;
-using Serilog;
-using Serilog.Context;
-using System.Net.Http;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace EndPoint.Api.Controllers;
 
@@ -24,7 +19,7 @@ public class ExternalServiceController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<EXUserViewModel>>> GetAllUsers()
+    public async Task<ActionResult<List<ExternalUserViewModel>>> GetAllUsers()
     {
         string apiUrl = _configuration["ExternalService:Api:UsersUrl"];
         HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
@@ -60,7 +55,7 @@ public class ExternalServiceController : ControllerBase
         return BadRequest($"Failed to retrieve data from the external service. Status Code : {statusCode}");
     }
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] EXUserViewModel data)
+    public async Task<IActionResult> CreateUser([FromBody] ExternalUserViewModel data)
     {
         string apiUrl = _configuration["ExternalService:Api:UsersUrl"];
 
@@ -86,7 +81,7 @@ public class ExternalServiceController : ControllerBase
         }
     }
     [HttpPut]
-    public async Task<IActionResult> UpdateUser(EXUserViewModel data)
+    public async Task<IActionResult> UpdateUser(ExternalUserViewModel data)
     {
         string apiUrl = _configuration[$"ExternalService:Api:UsersUrl{data.id}"];
 
@@ -131,7 +126,7 @@ public class ExternalServiceController : ControllerBase
     }
 }
 
-public class EXUserViewModel
+public class ExternalUserViewModel
 {
     public int id { get; set; }
     public string name { get; set; }

@@ -18,7 +18,6 @@ public class LogExceptionMiddleware
         try
         {
             await _next(context);
-            //_logger.LogInformation("Everything is Ok.");
         }
         catch (Exception ex)
         {
@@ -40,7 +39,7 @@ public class LogExceptionMiddleware
         await context.Response.WriteAsync(new ErrorDetails()
         {
             StatusCode = context.Response.StatusCode,
-            Message = message /*"Internal Server Error from the custom middleware."*/
+            Message = message 
         }.ToString());
     }
 }
@@ -51,9 +50,4 @@ public static class LogExceptionMiddlewareExtensions
     {
         appBuilder.UseMiddleware<LogExceptionMiddleware>();
     }
-
-    //public static void ConfigureLogExceptionMiddleware(this WebApplication app)
-    //{
-    //    app.UseMiddleware<LogExceptionMiddleware>();
-    //}
 }

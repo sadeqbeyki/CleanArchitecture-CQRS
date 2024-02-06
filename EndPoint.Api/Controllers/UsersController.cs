@@ -40,7 +40,6 @@ namespace EndPoint.Api.Controllers
             return Ok(result);
         }
 
-        [AllowAnonymous]
         [HttpGet("GetUserDetails/{userId}")]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetUserAsync(string userId)

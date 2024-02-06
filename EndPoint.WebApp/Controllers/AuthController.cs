@@ -38,27 +38,25 @@ namespace EndPoint.WebApp.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ProducesDefaultResponseType(typeof(JwtTokenDto))]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Login(LoginUserDto dto)
         {
             AuthCommand command = new(dto);
             var result = await _mediator.Send(command);
 
-            var identity = new GenericIdentity(result.User.UserName);
-            var principal = new GenericPrincipal(identity, new string[0]);
-            HttpContext.User = principal;
-            Thread.CurrentPrincipal = principal;
-
-            if (HttpContext.User.Identity!.IsAuthenticated)
-                if (!string.IsNullOrEmpty(result.Token))
+            if (!string.IsNullOrEmpty(result.Token))
+            {
+                Response.Cookies.Append("Token", result.Token, new CookieOptions
                 {
-                    Cookie cookie = new("JwtToken", result.Token);
-                    cookie.Expires = result.ExpireOn;
-                    Response.Cookies.Append("JwtToken", result.Token);
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                });
+                return RedirectToAction("Index", "Home");
+            }
 
-                    return RedirectToAction("Index", "Home", new { Token = result.Token });
-                }
             return BadRequest("User is not authenticated");
         }
+
+
     }
 }

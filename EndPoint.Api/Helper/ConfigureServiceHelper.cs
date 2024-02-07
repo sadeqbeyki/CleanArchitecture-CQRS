@@ -14,6 +14,7 @@ using Identity.Application.Common.Const;
 using System.Text;
 using Serilog;
 using Serilog.Events;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace EndPoint.Api.Helper;
 
@@ -106,6 +107,9 @@ public static class ConfigureServiceHelper
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         })
+        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => configuration.Bind("JwtSettings", options))
+        //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => configuration.Bind("CookieSettings", options))
         .AddJwtBearer(configureOptions =>
         {
             //configureOptions.RequireHttpsMetadata = false;

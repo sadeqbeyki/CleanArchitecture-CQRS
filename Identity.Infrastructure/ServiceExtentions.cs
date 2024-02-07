@@ -14,8 +14,7 @@ namespace Identity.Infrastructure;
 
 public static class ServiceExtentions
 {
-    public static void AddIdentityInfrastructure(this IServiceCollection services,
-        IConfiguration configuration)
+    public static void AddIdentityInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppIdentityDbContext>(option =>
             option.UseSqlServer(configuration.GetConnectionString("IdentityConnection")));

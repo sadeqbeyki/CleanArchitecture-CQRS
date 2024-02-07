@@ -1,15 +1,13 @@
 ﻿using Identity.Application.Interface;
 using Identity.Persistance.Identity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.ACL;
 
 public interface IUserServiceACL
 {
-    //Task<UserInfo> GetCurrentUserByEmailAsync(string email);
-
     Task<UserInfo> GetCurrentUserByClaimAsync(ClaimsPrincipal user);
     Task<UserInfo> GetCurrentUser();
 }
@@ -21,32 +19,14 @@ public class UserInfo
 
 }
 
-public class UserServiceACL : IUserServiceACL
+public class UserServiceACL(
+    UserManager<ApplicationUser> userManager,
+    IIdentityService identityService,
+    IHttpContextAccessor contextAccessor) : IUserServiceACL
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IHttpContextAccessor _contextAccessor;
-    private readonly IIdentityService _identityService;
-
-    public UserServiceACL(
-        UserManager<ApplicationUser> userManager,
-        IHttpContextAccessor contextAccessor,
-        IIdentityService identityService)
-    {
-        _userManager = userManager;
-        _contextAccessor = contextAccessor;
-        _identityService = identityService;
-    }
-
-    //public async Task<UserInfo> GetCurrentUserByEmailAsync(string email)
-    //{
-    //    var applicationUser = await _userManager.FindByEmailAsync(email);
-
-    //    return new UserInfo
-    //    {
-    //        Email = applicationUser?.Email,
-    //        PhoneNumber = applicationUser?.PhoneNumber,
-    //    };
-    //}
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly IIdentityService _identityService = identityService;
+    private readonly IHttpContextAccessor _contextAccessor = contextAccessor;
 
     public async Task<UserInfo> GetCurrentUserByClaimAsync(ClaimsPrincipal user)
     {

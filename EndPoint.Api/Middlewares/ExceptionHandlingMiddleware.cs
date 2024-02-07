@@ -1,13 +1,14 @@
 ﻿using EndPoint.Api.Middlewares.Model;
+using Identity.Application.Common.Exceptions;
 using System.Net;
 
 namespace EndPoint.Api.Middlewares;
 
-public class LogExceptionMiddleware
+public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<LogExceptionMiddleware> _logger;
-    public LogExceptionMiddleware(RequestDelegate next, ILogger<LogExceptionMiddleware> logger)
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -21,10 +22,11 @@ public class LogExceptionMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Something went wrong: {ex}");
+            _logger.LogError($"Exception occurred: {ex}");
             await HandleExceptionAsync(context, ex);
         }
     }
+
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
@@ -39,7 +41,7 @@ public class LogExceptionMiddleware
         await context.Response.WriteAsync(new ErrorDetails()
         {
             StatusCode = context.Response.StatusCode,
-            Message = message 
+            Message = message
         }.ToString());
     }
 }
@@ -48,6 +50,6 @@ public static class LogExceptionMiddlewareExtensions
 {
     public static void ConfigureLogExceptionMiddleware(this IApplicationBuilder appBuilder)
     {
-        appBuilder.UseMiddleware<LogExceptionMiddleware>();
+        appBuilder.UseMiddleware<ExceptionHandlingMiddleware>();
     }
 }

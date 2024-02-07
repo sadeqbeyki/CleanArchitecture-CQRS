@@ -28,7 +28,6 @@ namespace EndPoint.WebApp.Controllers
         {
             return View();
         }
-        //[ProducesDefaultResponseType(typeof(JwtTokenDto))]
 
         [HttpGet]
         public async Task<ActionResult<LoginUserDto>> Login()
@@ -56,7 +55,5 @@ namespace EndPoint.WebApp.Controllers
 
             return BadRequest("User is not authenticated");
         }
-
-
     }
 }

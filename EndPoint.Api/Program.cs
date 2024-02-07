@@ -17,6 +17,7 @@ builder.Services.AddControllers();
 //_______________________________Call API
 builder.Services.AddHttpClient();
 
+builder.Services.AddHttpContextAccessor();
 
 //_______________Caching
 #region Cache
@@ -54,7 +55,9 @@ builder.Services.AddAppSettings(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
-
+//Global Exception
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 #endregion
 
 var app = builder.Build();

@@ -6,7 +6,6 @@ using Identity.Application;
 using Identity.Application.Mapper;
 using Identity.Infrastructure;
 using Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +16,7 @@ builder.Services.AddControllers();
 //_______________________________Call API
 builder.Services.AddHttpClient();
 
-builder.Services.AddHttpContextAccessor();
+//builder.Services.AddHttpContextAccessor();
 
 //_______________Caching
 #region Cache
@@ -56,8 +55,8 @@ builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
 //Global Exception
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
+//builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+//builder.Services.AddProblemDetails();
 #endregion
 
 var app = builder.Build();

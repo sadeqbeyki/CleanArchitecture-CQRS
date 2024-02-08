@@ -14,7 +14,6 @@ using Identity.Application.Common.Const;
 using System.Text;
 using Serilog;
 using Serilog.Events;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace EndPoint.Api.Helper;
 

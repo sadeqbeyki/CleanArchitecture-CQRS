@@ -191,7 +191,8 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     }
     public async Task<(string id, string roleName)> GetRoleByIdAsync(string id)
     {
-        var role = await _roleManager.FindByIdAsync(id);
+        var role = await _roleManager.FindByIdAsync(id)
+            ?? throw new NotFoundException($"cant find any role with this id : {id}");
         return (role.Id, role.Name);
     }
     public async Task<bool> UpdateRole(string id, string roleName)
@@ -208,12 +209,8 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     }
     public async Task<bool> DeleteRoleAsync(string roleId)
     {
-        var roleDetails = await _roleManager.FindByIdAsync(roleId);
-        if (roleDetails == null)
-        {
-            throw new NotFoundException("Role not found");
-        }
-
+        var roleDetails = await _roleManager.FindByIdAsync(roleId)
+            ?? throw new NotFoundException("Role not found");
         if (roleDetails.Name == "Admin")
         {
             throw new BadRequestException("You can not delete Administrator Role");

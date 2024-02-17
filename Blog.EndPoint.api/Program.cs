@@ -1,7 +1,21 @@
+using Blog.Application.Interfaces;
+using Blog.Persistance.Common;
+using Blog.Persistance.Repositories;
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.ConfigureServices(builder.Configuration);
+builder.Services.Configure<MongoDbSettings>(options =>
+{
+    builder.Configuration.GetSection("MongoDbSettings");
+});
+
+builder.Services.AddSingleton<IMongoDbSettings>(serviceProvider =>
+    serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
+
+builder.Services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

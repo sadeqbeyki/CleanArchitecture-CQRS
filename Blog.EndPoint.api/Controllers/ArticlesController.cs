@@ -8,32 +8,32 @@ namespace Blog.EndPoint.api.Controllers;
 [Route("[controller]")]
 public class ArticleController : ControllerBase
 {
-    private readonly IMongoRepository<Article> _peopleRepository;
+    private readonly IMongoRepository<Article> _articleRepository;
 
     public ArticleController(IMongoRepository<Article> peopleRepository)
     {
-        _peopleRepository = peopleRepository;
+        _articleRepository = peopleRepository;
     }
 
     [HttpPost("createArticle")]
     public async Task AddArticle(string title, string shortDescription)
     {
-        var person = new Article()
+        Article article = new()
         {
-            Title="Economic",
-            ShortDescription="nemidanam"
+            Title = "Economic",
+            ShortDescription = "nemidanam"
         };
 
-        await _peopleRepository.InsertOneAsync(person);
+        await _articleRepository.InsertOneAsync(article);
     }
 
     [HttpGet("getArticleData")]
-    public IEnumerable<string> GetPeopleData()
+    public IEnumerable<string> GetArticleData()
     {
-        var people = _peopleRepository.FilterBy(
+        var article = _articleRepository.FilterBy(
             filter => filter.Title != "test",
             projection => projection.Title
         );
-        return people;
+        return article;
     }
 }

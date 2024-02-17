@@ -1,9 +1,10 @@
-﻿using Blog.Domain.Entities.ArticleCategoryAgg;
+﻿using Blog.Domain.Attributes;
+using Blog.Domain.Entities.ArticleCategoryAgg;
 using Blog.Domain.Entities.Base;
 
 namespace Blog.Domain.Entities.ArticleAgg;
-
-public class Article : BaseEntity<Guid>
+[BsonCollection("articles")]
+public class Article : Document
 {
     public string Title { get; private set; }
     public string ShortDescription { get; private set; }

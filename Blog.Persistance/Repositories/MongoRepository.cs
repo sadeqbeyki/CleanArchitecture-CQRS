@@ -1,6 +1,8 @@
 ﻿using Blog.Application.Interfaces;
 using Blog.Domain.Attributes;
 using Blog.Domain.Entities.Base;
+using Blog.Persistance.Common;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Linq.Expressions;
@@ -14,8 +16,9 @@ public class MongoRepository<TDocument> : IMongoRepository<TDocument>
 
     public MongoRepository(IMongoDbSettings settings)
     {
-        var database = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
-        _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
+        var mongoClient = new MongoClient(settings.ConnectionString);
+        var mongoDatabase = mongoClient.GetDatabase(settings.DatabaseName);
+        _collection = mongoDatabase.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
     }
 
     private protected string GetCollectionName(Type documentType)

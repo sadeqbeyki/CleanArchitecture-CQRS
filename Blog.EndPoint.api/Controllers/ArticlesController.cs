@@ -20,8 +20,8 @@ public class ArticleController : ControllerBase
     {
         Article article = new()
         {
-            Title = "Economic",
-            ShortDescription = "nemidanam"
+            Title = title,
+            ShortDescription = shortDescription
         };
 
         await _articleRepository.InsertOneAsync(article);

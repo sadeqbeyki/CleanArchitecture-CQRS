@@ -1,8 +1,6 @@
 ﻿using Blog.Application.Interfaces;
 using Blog.Domain.Attributes;
 using Blog.Domain.Entities.Base;
-using Blog.Persistance.Common;
-using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Linq.Expressions;
@@ -65,7 +63,7 @@ public class MongoRepository<TDocument> : IMongoRepository<TDocument>
     }
 
     public virtual Task<TDocument> FindByIdAsync(string id)
-    {
+    { 
         return Task.Run(() =>
         {
             var objectId = new ObjectId(id);

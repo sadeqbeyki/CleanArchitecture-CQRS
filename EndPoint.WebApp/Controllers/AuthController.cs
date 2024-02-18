@@ -39,8 +39,7 @@ namespace EndPoint.WebApp.Controllers
         [ProducesDefaultResponseType(typeof(JwtTokenDto))]
         public async Task<IActionResult> Login(LoginUserDto dto)
         {
-            AuthCommand command = new(dto);
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(new AuthCommand(dto));
 
             if (!string.IsNullOrEmpty(result.Token))
             {

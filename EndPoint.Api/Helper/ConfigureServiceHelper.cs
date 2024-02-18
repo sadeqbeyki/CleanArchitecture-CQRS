@@ -100,30 +100,20 @@ public static class ConfigureServiceHelper
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
         SymmetricSecurityKey signingKey = new(Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"]));
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        //    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => configuration.Bind("JwtSettings", options))
-        //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => configuration.Bind("CookieSettings", options))
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(configureOptions =>
         {
-            //configureOptions.RequireHttpsMetadata = false;
-            //configureOptions.SaveToken = true;
             configureOptions.TokenValidationParameters = new TokenValidationParameters()
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = configuration["JwtIssuerOptions:Issuer"],
                 ValidAudience = configuration["JwtIssuerOptions:Audience"],
-                ValidateLifetime = true,
                 IssuerSigningKey = signingKey,
+                ClockSkew = TimeSpan.FromSeconds(30),
                 RequireExpirationTime = true,
-                ClockSkew = TimeSpan.Zero
             };
         });
     }

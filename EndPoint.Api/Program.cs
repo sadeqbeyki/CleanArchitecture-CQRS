@@ -47,7 +47,7 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddCustomSwagger(builder.Configuration);
-builder.Services.AddCustomCors();
+//builder.Services.AddCustomCors();
 builder.Services.AddCustomIdentity();
 builder.Services.AddCustomLocalization();
 builder.Services.AddAppSettings(builder.Configuration);
@@ -85,7 +85,7 @@ app.ConfigureLogExceptionMiddleware();
 
 app.UseRouting();
 
-app.UseCors("AllowAll");
+//app.UseCors("AllowAll");
 
 app.UseAuthentication();
 

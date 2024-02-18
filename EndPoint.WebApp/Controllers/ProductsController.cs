@@ -8,6 +8,7 @@ using EndPoint.WebApp.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EndPoint.WebApp.Controllers
 {

@@ -297,7 +297,7 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
             {
                 throw new NotFoundException("user is not allowed");
             }
-            //await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, isPersistent: false);
             return user;
         }
         throw new BadRequestException("User Not Found!");
@@ -347,30 +347,14 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
 
         // Add new claims
         string userName = user.UserName ?? throw new NotFoundException("cant find user");
-        List<Claim> tokenClaims = new()
-        {
+        List<Claim> tokenClaims =
+        [
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
             new(JwtRegisteredClaimNames.Sub, user.UserName),
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Role, rolesOfUser.FirstOrDefault() ?? "Member"),
             new(ClaimTypes.Name, user.PhoneNumber)
-
-            //new Claim("user_role", "admin")
-        };
-
-
-        //adedd-------------------------------------------------------------------------
-
-        //var resultB = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-        //await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, resultB.Principal);
-        //bool resultA =ClaimsPrincipal.Current.Identity.IsAuthenticated;
-        //var claim = new Claim(user.UserName, user.PasswordHash);
-        //var identity = new ClaimsIdentity(new[] { claim }, "BasicAuthentication"); // this uses basic auth
-        //var principal = new ClaimsPrincipal(identity);
-        //bool resultB = ClaimsPrincipal.Current.Identity.IsAuthenticated;
-        //adedd-------------------------------------------------------------------------
-
+        ];
 
         // Make JWT token
         JwtSecurityToken token = new(
@@ -381,22 +365,22 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
             signingCredentials: credentials
         );
 
-        // Set current user details for busines & common library
-        string userEmail = user.Email ?? throw new NotFoundException("The email value cannot be empty");
-        var currentUser = await _userManager.FindByEmailAsync(user.Email) ?? throw new NotFoundException("No user found with this email");
+        //// Set current user details for busines & common library
+        //string userEmail = user.Email ?? throw new NotFoundException("The email value cannot be empty");
+        //var currentUser = await _userManager.FindByEmailAsync(user.Email) ?? throw new NotFoundException("No user found with this email");
 
         // Update claim details
-        await _userManager.RemoveClaimsAsync(currentUser, toRemoveClaims);
+        await _userManager.RemoveClaimsAsync(user, toRemoveClaims);
         /*var claims =*/
-        await _userManager.AddClaimsAsync(currentUser, tokenClaims);
+        await _userManager.AddClaimsAsync(user, tokenClaims);
 
         // Return it
         JwtTokenDto generatedToken = new()
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             ExpireOn = tokenExpireOn,
-            UserDetails = await GetUserDetailsAsync(currentUser),
-            User = currentUser///////////////////
+            UserDetails = await GetUserDetailsAsync(user),
+            User = user///////////////////
         };
 
         return generatedToken;
@@ -404,13 +388,13 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
 
     public string GenerateJWTAuthetication(ApplicationUser user)
     {
-        var claims = new List<Claim>
-    {
-        new Claim(JwtHeaderParameterNames.Jku, user.UserName),
-        new Claim(JwtHeaderParameterNames.Kid, Guid.NewGuid().ToString()),
-        new Claim(ClaimTypes.NameIdentifier, user.UserName),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email)
-    };
+        List<Claim> claims =
+                            [
+                                new (JwtHeaderParameterNames.Jku, user.UserName),
+                                new (JwtHeaderParameterNames.Kid, Guid.NewGuid().ToString()),
+                                new (ClaimTypes.NameIdentifier, user.UserName),
+                                new (JwtRegisteredClaimNames.Email, user.Email)
+                            ];
 
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtIssuerOptions:SecretKey"]));
         var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);

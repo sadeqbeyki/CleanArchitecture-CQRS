@@ -14,6 +14,7 @@ public interface IUserServiceACL
 
 public class UserInfo
 {
+    public string Id { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
 
@@ -34,6 +35,7 @@ public class UserServiceACL(
 
         return new UserInfo
         {
+            Id = applicationUser?.Id,
             Email = applicationUser?.Email,
             PhoneNumber = applicationUser?.PhoneNumber?.ToString(),
         };
@@ -43,8 +45,9 @@ public class UserServiceACL(
     {
         string userId = GetCurrentOperatorId();
         var user = await _identityService.GetUserByIdAsync(userId);
-        var userDetails = new UserInfo
+        UserInfo userDetails = new ()
         {
+            Id = userId,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber
         };

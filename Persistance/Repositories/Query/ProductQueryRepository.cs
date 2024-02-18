@@ -6,8 +6,8 @@ namespace Persistance.Repositories.Query;
 
 public class ProductQueryRepository : Repository<Product, Guid>, IProductQueryRepository
 {
-    private readonly ProductDbContext _dbContext;
-    public ProductQueryRepository(ProductDbContext dbContext) : base(dbContext)
+    private readonly ShopDbContext _dbContext;
+    public ProductQueryRepository(ShopDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
     }

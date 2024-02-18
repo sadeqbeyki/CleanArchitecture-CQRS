@@ -6,6 +6,7 @@ using Identity.Application.Interface;
 using Microsoft.AspNetCore.Identity;
 using Identity.Persistance.Identity;
 using System.Security.Principal;
+using System.Security.Claims;
 
 namespace EndPoint.Api.Controllers
 {
@@ -26,9 +27,9 @@ namespace EndPoint.Api.Controllers
 
         [HttpPost("Login")]
         [ProducesDefaultResponseType(typeof(JwtTokenDto))]
-        public async Task<IActionResult> Login([FromBody] AuthCommand command)
+        public async Task<IActionResult> Login([FromBody] LoginUserDto dto)
         {
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(new AuthCommand(dto));
 
             var identity = new GenericIdentity(result.User.UserName);
             var principal = new GenericPrincipal(identity, new string[0]);

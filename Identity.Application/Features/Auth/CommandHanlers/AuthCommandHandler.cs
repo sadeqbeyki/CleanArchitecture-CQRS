@@ -19,35 +19,11 @@ internal sealed class AuthCommandHandler : IRequestHandler<AuthCommand, JwtToken
 
     public async Task<JwtTokenDto> Handle(AuthCommand request, CancellationToken cancellationToken)
     {
-        var result = await _identityService.SigninUser(request.dto);
+        var result = await _identityService.SigninUser(request.dto)
+            ?? throw new BadRequestException("Invalid username or password");
 
-        if (result == null)
-        {
-            throw new BadRequestException("Invalid username or password");
-        }
-
-        //var user = await _identityService.GetUserByNameAsync(request.dto.Username);
 
         JwtTokenDto token = await _identityService.GetJwtSecurityTokenAsync(result);
-
         return token;
-
     }
-
-    //public async Task<JwtTokenDto> Handle(AuthCommand request, CancellationToken cancellationToken)
-    //{
-    //    var result = await _identityService.SigninUserAsync(request.dto);
-
-    //    if (!result)
-    //    {
-    //        throw new BadRequestException("Invalid username or password");
-    //    }
-
-    //    var user = await _identityService.GetUserByNameAsync(request.dto.Username);
-
-    //    JwtTokenDto token = await _identityService.GetJwtSecurityTokenAsync(user);
-
-    //    return token;
-
-    //}
 }

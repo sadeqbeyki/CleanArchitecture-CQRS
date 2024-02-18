@@ -13,13 +13,13 @@ public interface IProductDbContext
     DbSet<Customer> Customers { get; set; }
 }
 
-public class ProductDbContext : DbContext, IProductDbContext
+public class ShopDbContext : DbContext, IProductDbContext
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Customer> Customers { get; set; }
 
-    public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options)
+    public ShopDbContext(DbContextOptions<ShopDbContext> options) : base(options)
     {
     }
 

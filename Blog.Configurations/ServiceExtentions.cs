@@ -9,12 +9,9 @@ namespace Blog.Persistance;
 
 public static class ServiceExtentions
 {
-    public static void ConfigureServices(this IServiceCollection services, IConfigurationSection configuration)
+    public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<MongoDbSettings>(options =>
-        {
-            configuration.GetSection("MongoDbSettings");
-        });
+        //services.Configure<MongoDbSettings>(configuration.GetSection("MongoDbSettings"));
 
         services.AddSingleton<IMongoDbSettings>(serviceProvider =>
             serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);

@@ -1,4 +1,5 @@
 ﻿using Identity.Application.Common.Exceptions;
+using Identity.Application.DTOs;
 using Identity.Application.DTOs.Auth;
 using Identity.Application.Features.Auth.Command;
 using Identity.Application.Interface;
@@ -23,7 +24,13 @@ internal sealed class AuthCommandHandler : IRequestHandler<AuthCommand, JwtToken
             ?? throw new BadRequestException("Invalid username or password");
 
 
-        JwtTokenDto token = await _identityService.GetJwtSecurityTokenAsync(result);
-        return token;
+        //JwtTokenDto token = await _identityService.GetJwtSecurityTokenAsync(result);
+        //return token;
+        return new JwtTokenDto
+        {
+            ExpireOn = DateTime.UtcNow.AddHours(3),
+            Token = _identityService.GenerateJWTAuthetication(result),
+            UserDetails = new UserDetailsDto()
+        };
     }
 }

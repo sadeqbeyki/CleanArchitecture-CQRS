@@ -1,5 +1,6 @@
 using Application;
 using Application.Mapper;
+using Autofac.Core;
 using EndPoint.Api.Helper;
 using EndPoint.Api.Middlewares;
 using Identity.Application;
@@ -35,6 +36,12 @@ builder.Services.AddStackExchangeRedisCache(redisOption =>
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
     );
+//Elmah
+builder.Services.AddElmahIo(o =>
+{
+    o.ApiKey = "748cb69254d14f64bf47ed09abb94f65";
+    o.LogId = new Guid("7f6096d3-c6d6-4233-84da-39828f6030f0");
+});
 #endregion
 
 //_______________ Add DependencyInjection
@@ -47,9 +54,9 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddCustomSwagger(builder.Configuration);
-//builder.Services.AddCustomCors();
+builder.Services.AddCustomCors();
 builder.Services.AddCustomIdentity();
-builder.Services.AddCustomLocalization();
+//builder.Services.AddCustomLocalization();
 builder.Services.AddAppSettings(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
@@ -76,6 +83,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseElmahIo();
+
 app.UseHttpsRedirection();
 
 //app.UseSerilogRequestLogging();
@@ -85,7 +94,7 @@ app.ConfigureLogExceptionMiddleware();
 
 app.UseRouting();
 
-//app.UseCors("AllowAll");
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 

@@ -98,7 +98,6 @@ public static class ConfigureServiceHelper
     public static void AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
     {
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
-        SymmetricSecurityKey signingKey = new(Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"]));
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(configureOptions =>
@@ -111,7 +110,7 @@ public static class ConfigureServiceHelper
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = configuration["JwtIssuerOptions:Issuer"],
                 ValidAudience = configuration["JwtIssuerOptions:Audience"],
-                IssuerSigningKey = signingKey,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"])),
                 ClockSkew = TimeSpan.FromSeconds(30),
                 RequireExpirationTime = true,
             };

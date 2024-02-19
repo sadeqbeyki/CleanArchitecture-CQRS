@@ -365,10 +365,6 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
             signingCredentials: credentials
         );
 
-        //// Set current user details for busines & common library
-        //string userEmail = user.Email ?? throw new NotFoundException("The email value cannot be empty");
-        //var currentUser = await _userManager.FindByEmailAsync(user.Email) ?? throw new NotFoundException("No user found with this email");
-
         // Update claim details
         await _userManager.RemoveClaimsAsync(user, toRemoveClaims);
         /*var claims =*/
@@ -380,7 +376,6 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             ExpireOn = tokenExpireOn,
             UserDetails = await GetUserDetailsAsync(user),
-            User = user///////////////////
         };
 
         return generatedToken;

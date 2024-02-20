@@ -99,9 +99,15 @@ public static class ConfigureServiceHelper
     {
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
         .AddJwtBearer(configureOptions =>
         {
+            configureOptions.SaveToken = true;
             configureOptions.TokenValidationParameters = new TokenValidationParameters()
             {
                 ValidateIssuer = true,
@@ -110,9 +116,9 @@ public static class ConfigureServiceHelper
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = configuration["JwtIssuerOptions:Issuer"],
                 ValidAudience = configuration["JwtIssuerOptions:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JwtIssuerOptions:SecretKey"])),
-                ClockSkew = TimeSpan.FromSeconds(30),
-                RequireExpirationTime = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtIssuerOptions:SecretKey"])),
+                //ClockSkew = TimeSpan.FromSeconds(30),
+                //RequireExpirationTime = true,
             };
         });
     }

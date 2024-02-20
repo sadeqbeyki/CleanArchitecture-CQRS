@@ -37,11 +37,10 @@ namespace Identity.Application.Interface
         Task<ApplicationUser> GetUserByIdAsync(string id);
 
         //Account
-        Task<bool> SigninUserAsync(LoginUserDto dto);
-        Task<ApplicationUser> SigninUser(LoginUserDto request);
+        Task<JwtTokenDto> SigninUserAsync(LoginUserDto request);
 
         Task<JwtTokenDto> GetJwtSecurityTokenAsync(ApplicationUser user);
-        string GenerateJWTAuthetication(ApplicationUser user);
+        //Task<JwtTokenDto> GenerateJWTAuthetication(ApplicationUser user);
 
     }
 }

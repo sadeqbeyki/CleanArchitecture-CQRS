@@ -3,10 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Identity.Application.DTOs.Auth;
 using Identity.Application.Interface;
-using Microsoft.AspNetCore.Identity;
-using Identity.Persistance.Identity;
-using System.Security.Principal;
-using System.Security.Claims;
 
 namespace EndPoint.Api.Controllers
 {
@@ -31,16 +27,8 @@ namespace EndPoint.Api.Controllers
         {
             var result = await _mediator.Send(new AuthCommand(dto));
 
-            //var identity = new GenericIdentity(result.UserDetails.UserId);
-            ////identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, result.UserDetails.UserId));
-            //var principal = new GenericPrincipal(identity, new string[0]);
-            //HttpContext.User = principal;
-            //Thread.CurrentPrincipal = principal;
-
-            User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (User.Identity.IsAuthenticated) // is true
-
-                    return Ok(result.Token);
+            if (User.Identity.IsAuthenticated)
+                return Ok(result.Token);
             return BadRequest("faild");
         }
 

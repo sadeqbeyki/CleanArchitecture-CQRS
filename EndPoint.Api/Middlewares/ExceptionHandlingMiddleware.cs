@@ -1,5 +1,4 @@
-﻿using EndPoint.Api.Middlewares.Model;
-using Identity.Application.Common.Exceptions;
+﻿using EndPoint.Api.Model;
 using System.Net;
 
 namespace EndPoint.Api.Middlewares;

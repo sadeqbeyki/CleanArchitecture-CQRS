@@ -30,7 +30,7 @@ public class ProductsController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetProducts()
+    public async Task<IActionResult> Get()
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -47,23 +47,8 @@ public class ProductsController : ControllerBase
         }
     }
 
-    [HttpGet("GetProductsByEmail")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetProductsByEmail([FromQuery] string email)
-    {
-        var result = await _mediator.Send(new GetProductsByEmailQuery(email));
-        return Ok(result);
-    }
 
-    [HttpGet("GetProductsByEmailPhone")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetProductsByEmailPhone([FromQuery] string mailORphone)
-    {
-        var result = await _mediator.Send(new GetProductsByEmailPhoneQuery(mailORphone));
-        return StatusCode(StatusCodes.Status200OK);
-    }
-
-    [HttpGet("GetById/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -74,10 +59,27 @@ public class ProductsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("CreateProduct")]
+
+    [HttpGet("[action]")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetByEmail([FromQuery] string email)
+    {
+        var result = await _mediator.Send(new GetProductsByEmailQuery(email));
+        return Ok(result);
+    }
+
+    [HttpGet("[action]")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetByPhoneEmail([FromQuery] string phoneOrEmail)
+    {
+        var result = await _mediator.Send(new GetProductsByEmailPhoneQuery(phoneOrEmail));
+        return StatusCode(StatusCodes.Status200OK);
+    }
+
+    [HttpPost("[action]")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateProduct([FromForm]AddProductDto model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromForm]AddProductDto model, CancellationToken cancellationToken)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
          
@@ -87,16 +89,16 @@ public class ProductsController : ControllerBase
         return StatusCode(StatusCodes.Status400BadRequest);
     }
 
-    [HttpPut("UpdateProduct/{id}")]
-    public async Task<IActionResult> UpdateProduct([FromForm] UpdateProductCommand updateCommand,
+    [HttpPut("[action]/{id}")]
+    public async Task<IActionResult> Update([FromForm] UpdateProductCommand updateCommand,
         CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(updateCommand, cancellationToken);
         return Ok(result);
     }
 
-    [HttpDelete("DeleteProduct/{id}")]
-    public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
+    [HttpDelete("[action]/{id}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(new DeleteProductCommand { Id = id }, cancellationToken);
         return Ok(result);

@@ -7,18 +7,11 @@ namespace Domain.Entities.Products;
 
 public class Product : BaseEntity<Guid>
 {
-    [Required(ErrorMessage = "need to choose")]
-    [StringLength(50)]
     public string Name { get; private set; }
     public string MemberId { get; set; }
-
-    [Phone]
     public string ManufacturerPhone { get; private set; }
-
-    [EmailAddress]
     public string ManufacturerEmail { get; private set; }
     public string ImageUrl { get; set; }
-
 
     public bool IsAvailable { get; private set; }
 

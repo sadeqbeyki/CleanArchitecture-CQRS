@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace EndPoint.Api.Middlewares.Model;
+namespace EndPoint.Api.Model;
 
 public class ErrorDetails
 {

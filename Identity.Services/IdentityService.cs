@@ -76,7 +76,7 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     }
     public async Task<List<UserDetailsDto>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
-        string key = nameof(GetAllUsersAsync);;
+        string key = nameof(GetAllUsersAsync); ;
         List<UserDetailsDto>? members = await _distributedCache.GetObjectAsync<List<UserDetailsDto>>(key, cancellationToken);
         if (members == null)
         {
@@ -267,38 +267,21 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     #endregion
 
     #region Account
-    public async Task<bool> SigninUserAsync(LoginUserDto request)
+    public async Task<JwtTokenDto> SigninUserAsync(LoginUserDto request)
     {
         var user = await _userManager.FindByNameAsync(request.Username)
             ?? throw new BadRequestException("User Doesn't exist!");
 
         if (user.UserName == request.Username)
         {
-            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, true, false);
-            if (!result.Succeeded)
+            var loginResult = await _signInManager.PasswordSignInAsync(request.Username, request.Password, true, false);
+            if (!loginResult.Succeeded)
             {
                 throw new NotFoundException("user is not allowed");
             }
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return result.Succeeded;
-        }
-        throw new BadRequestException("User Not Found!");
-    }
-
-    public async Task<ApplicationUser> SigninUser(LoginUserDto request)
-    {
-        var user = await _userManager.FindByNameAsync(request.Username)
-            ?? throw new BadRequestException("User Doesn't exist!");
-
-        if (user.UserName == request.Username)
-        {
-            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, true, false);
-            if (!result.Succeeded)
-            {
-                throw new NotFoundException("user is not allowed");
-            }
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return user;
+            //await _signInManager.SignInAsync(user, isPersistent: false);
+            var result = await GenerateJWTAuthetication(user);
+            return result;
         }
         throw new BadRequestException("User Not Found!");
     }
@@ -381,19 +364,18 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
         return generatedToken;
     }
 
-    public string GenerateJWTAuthetication(ApplicationUser user)
+    private async Task<JwtTokenDto> GenerateJWTAuthetication(ApplicationUser user)
     {
         List<Claim> claims =
                             [
-                                new (JwtHeaderParameterNames.Jku, user.UserName),
-                                new (JwtHeaderParameterNames.Kid, Guid.NewGuid().ToString()),
-                                new (ClaimTypes.NameIdentifier, user.UserName),
-                                new (JwtRegisteredClaimNames.Email, user.Email)
+                                new(JwtHeaderParameterNames.Jku, user.UserName),
+                                new(JwtHeaderParameterNames.Kid, Guid.NewGuid().ToString()), // hash
+                                new(ClaimTypes.NameIdentifier, user.UserName),
                             ];
 
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtIssuerOptions:SecretKey"]));
         var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);
-        var expires = DateTime.Now.AddMinutes(2);
+        var expires = DateTime.Now.AddHours(8);
 
         var token = new JwtSecurityToken(
             issuer: _configuration["JwtIssuerOptions:Issuer"],
@@ -402,7 +384,13 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
             expires: expires,
             signingCredentials: signingCredentials
         );
-        return new JwtSecurityTokenHandler().WriteToken(token);
+
+        return new JwtTokenDto()
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            ExpireOn = expires,
+            UserDetails = await GetUserDetailsAsync(user),
+        };
     }
 
     public async Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user)

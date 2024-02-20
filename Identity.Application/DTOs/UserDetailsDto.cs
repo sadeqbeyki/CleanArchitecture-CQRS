@@ -43,6 +43,7 @@ public class UserDetailsDto
     #endregion
 
     #region Additional Fields
+    [Required(ErrorMessage = "RequiredField")]
     [DisplayName("Language/Culture")]
     public SupportedCulture Culture { get; set; }
 

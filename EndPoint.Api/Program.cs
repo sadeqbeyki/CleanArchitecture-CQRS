@@ -1,6 +1,5 @@
 using Application;
 using Application.Mapper;
-using Autofac.Core;
 using EndPoint.Api.Helper;
 using EndPoint.Api.Middlewares;
 using Identity.Application;
@@ -19,8 +18,9 @@ builder.Services.AddHttpClient();
 
 //builder.Services.AddHttpContextAccessor();
 
-//_______________Caching
-#region Cache
+#region DependencyInjection
+
+//cache
 builder.Services.AddStackExchangeRedisCache(redisOption =>
 {
     var connection = builder.Configuration.GetConnectionString("Redis");
@@ -28,10 +28,8 @@ builder.Services.AddStackExchangeRedisCache(redisOption =>
     redisOption.InstanceName = "localRedis_";
 
 });
-#endregion
 
-//_______________Logging
-#region Logging
+//log
 //Add support to logging with SERILOG
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
@@ -42,10 +40,9 @@ builder.Services.AddElmahIo(o =>
     o.ApiKey = "748cb69254d14f64bf47ed09abb94f65";
     o.LogId = new Guid("7f6096d3-c6d6-4233-84da-39828f6030f0");
 });
-#endregion
 
 //_______________ Add DependencyInjection
-#region DependencyInjection
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentityApplication();
@@ -56,7 +53,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCustomSwagger(builder.Configuration);
 builder.Services.AddCustomCors();
 builder.Services.AddCustomIdentity();
-//builder.Services.AddCustomLocalization();
+builder.Services.AddCustomLocalization();
 builder.Services.AddAppSettings(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
@@ -68,8 +65,9 @@ builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
 
 var app = builder.Build();
 
+
+#region CreateDbWhenDosentExist 
 //_____________________ Create Db When Dosent Exist
-#region CreateDbWhenDosentExist
 app.CreateDatabase();
 app.CreateIdentityDatabase();
 
@@ -80,7 +78,6 @@ app.SeedData();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerCustom(builder.Configuration);
-    app.UseSwaggerUI();
 }
 
 app.UseElmahIo();
@@ -89,7 +86,6 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
-//app.UseSerilogRequestLogging();
 app.AddCustomSerilogLogging();
 
 app.ConfigureLogExceptionMiddleware();

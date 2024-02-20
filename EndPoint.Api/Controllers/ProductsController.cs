@@ -88,7 +88,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("UpdateProduct/{id}")]
-    public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductCommand updateCommand,
+    public async Task<IActionResult> UpdateProduct([FromForm] UpdateProductCommand updateCommand,
         CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(updateCommand, cancellationToken);

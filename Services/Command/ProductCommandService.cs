@@ -91,27 +91,30 @@ public class ProductCommandService : IProductCommandService
 
     public async Task<Guid> UpdateProduct(UpdateProductDto dto)
     {
-        var user = await _userServiceACL.GetCurrentUser()
-            ?? throw new NotFoundException(" user not found !");
+        //var user = await _userServiceACL.GetCurrentUser()
+        //?? throw new NotFoundException(" user not found !");
 
-        var existProduct = await _productRepository.GetByIdAsync(dto.Id)
+        var product = await _productRepository.GetByIdAsync(dto.Id)
             ?? throw new NotFoundException(" product not found !");
 
-        if (user.Email != existProduct.ManufacturerEmail)
-            throw new BadRequestException(" You can only edit products that you have created yourself. ");
+        //if (user.Email != product.ManufacturerEmail)
+        //    throw new BadRequestException(" You can only edit products that you have created yourself. ");
 
-        string filePath = UploadImage(dto.Image);
+        string filePath = dto.Image != null ? UploadImage(dto.Image) : product.ImageUrl;
 
-        existProduct.Edit(
+        product.Edit(
             dto.Name,
-            user.Id,
-            user.PhoneNumber,
-            user.Email,
+            //user.Id,
+            //user.PhoneNumber,
+            //user.Email,
+            dto.MemberId,
+            dto.ManufacturerPhone,
+            dto.ManufacturerEmail,
             filePath,
             dto.CategoryId);
-        await _productRepository.UpdateAsync(existProduct);
+        await _productRepository.UpdateAsync(product);
 
-        return existProduct.Id;
+        return product.Id;
     }
 
     private static string UploadImage(IFormFile image)

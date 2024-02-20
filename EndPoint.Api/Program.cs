@@ -85,6 +85,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseElmahIo();
 
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 
 //app.UseSerilogRequestLogging();

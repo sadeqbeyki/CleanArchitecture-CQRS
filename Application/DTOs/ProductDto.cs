@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.AspNetCore.Http;
+
 namespace Application.DTOs;
 
 public abstract class ProductDto

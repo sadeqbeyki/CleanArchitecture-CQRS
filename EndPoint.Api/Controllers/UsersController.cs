@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EndPoint.Api.Controllers
 {
@@ -44,6 +45,8 @@ namespace EndPoint.Api.Controllers
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetUserAsync(string userId)
         {
+            var used = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var result = await _mediator.Send(new GetUserDetailsQuery(userId));
             return Ok(result);
         }
@@ -51,8 +54,10 @@ namespace EndPoint.Api.Controllers
 
         [HttpGet("GetUserDetailsByUserName/{userName}")]
         [ProducesDefaultResponseType(typeof(UserDetailsDto))]
-        public async Task<IActionResult> GetUserByUserName(string userName)
+        public async Task<IActionResult> GetUserDetailsByUserName(string userName)
         {
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var result = await _mediator.Send(new GetUserByUserNameQuery(userName));
             return Ok(result);
         }

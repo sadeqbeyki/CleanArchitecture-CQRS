@@ -7,6 +7,7 @@ using Domain.Interface;
 using FluentValidation;
 using FluentValidation.Results;
 using Infrastructure.ACL;
+using Microsoft.AspNetCore.Http;
 
 namespace Services.Command;
 
@@ -38,6 +39,8 @@ public class ProductCommandService : IProductCommandService
     {
         ValidationResult validationResult = await _validator.ValidateAsync(dto);
 
+        string filePath = UploadImage(dto.Image);
+
         if (!validationResult.IsValid)
         {
             foreach (var failure in validationResult.Errors)
@@ -47,21 +50,27 @@ public class ProductCommandService : IProductCommandService
         }
         else
         {
-            var user = await _userServiceACL.GetCurrentUser();
+            //var user = await _userServiceACL.GetCurrentUser();
             Product product = new(
                 dto.Name,
-                user.Id,
-                user.PhoneNumber,
-                user.Email,
+                //user.Id,
+                //user.PhoneNumber,
+                //user.Email,
+                dto.MemberId,
+                dto.ManufacturerPhone,
+                dto.ManufacturerEmail,
+                filePath,
                 dto.CategoryId);
             var newProduct = await _productRepository.CreateAsync(product);
 
             var mapProduct = _mapper.Map<ProductDetailsDto>(newProduct);
             return mapProduct;
         }
-        
+
         throw new Exception(" cant add new product " + validationResult.Errors.ToList());
     }
+
+
 
     public async Task<Guid> DeleteProduct(Guid productId)
     {
@@ -91,14 +100,30 @@ public class ProductCommandService : IProductCommandService
         if (user.Email != existProduct.ManufacturerEmail)
             throw new BadRequestException(" You can only edit products that you have created yourself. ");
 
+        string filePath = UploadImage(dto.Image);
+
         existProduct.Edit(
             dto.Name,
             user.Id,
             user.PhoneNumber,
-            user.Email, 
+            user.Email,
+            filePath,
             dto.CategoryId);
         await _productRepository.UpdateAsync(existProduct);
 
         return existProduct.Id;
+    }
+
+    private static string UploadImage(IFormFile image)
+    {
+        Guid guid = Guid.NewGuid();
+        var filePath = Path.Combine("wwwroot/ProductImages/", guid + ".jpg");
+        if (image != null)
+        {
+            var fileStream = new FileStream(filePath, FileMode.Create);
+            image.CopyTo(fileStream);
+        }
+
+        return filePath.Remove(0, 7);
     }
 }

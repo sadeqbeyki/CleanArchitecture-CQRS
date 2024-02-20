@@ -1,8 +1,10 @@
-﻿using Application.Features.Products.Commands;
+﻿using Application.DTOs;
+using Application.Features.Products.Commands;
 using Application.Features.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,8 +14,7 @@ namespace EndPoint.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Member")]
+//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Member")]
 public class ProductsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -68,18 +69,19 @@ public class ProductsController : ControllerBase
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
+        if (result == null)
+            return NotFound("No product with this ID was found!");
         return Ok(result);
     }
 
     [HttpPost("CreateProduct")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateProduct(CreateProductCommand createCommand,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateProduct([FromForm]AddProductDto model, CancellationToken cancellationToken)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var result = await _mediator.Send(createCommand, cancellationToken);
+         
+        var result = await _mediator.Send(new CreateProductCommand(model), cancellationToken);
         if (result.Id != Guid.Empty)
             return StatusCode(StatusCodes.Status201Created);
         return StatusCode(StatusCodes.Status400BadRequest);

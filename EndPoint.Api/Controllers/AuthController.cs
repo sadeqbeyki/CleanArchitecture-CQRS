@@ -31,13 +31,16 @@ namespace EndPoint.Api.Controllers
         {
             var result = await _mediator.Send(new AuthCommand(dto));
 
-            //var identity = new GenericIdentity(result.UserDetails.UserName);
+            //var identity = new GenericIdentity(result.UserDetails.UserId);
+            ////identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, result.UserDetails.UserId));
             //var principal = new GenericPrincipal(identity, new string[0]);
             //HttpContext.User = principal;
             //Thread.CurrentPrincipal = principal;
 
-            if (User.Identity.IsAuthenticated)
-                return Ok(result.Token);
+            User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (User.Identity.IsAuthenticated) // is true
+
+                    return Ok(result.Token);
             return BadRequest("faild");
         }
 

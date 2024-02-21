@@ -15,7 +15,6 @@ using ValidationException = System.ComponentModel.DataAnnotations.ValidationExce
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
 using Identity.Application.Helper;
-using Azure.Core;
 
 
 namespace Identity.Services;
@@ -57,6 +56,10 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     #region User
     public async Task<(bool isSucceed, string userId)> CreateUserAsync(RegisterUserDto userDto)
     {
+        var existUser = await _userManager.FindByEmailAsync(userDto.Email);
+        if (existUser != null)
+            throw new BadRequestException($"This email : {existUser.Email} has already been registered in the system!");
+
         var user = _mapper.Map<ApplicationUser>(userDto);
 
         var result = await _userManager.CreateAsync(user, userDto.Password);
@@ -133,8 +136,6 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
         var result = await _userManager.DeleteAsync(user);
         return result.Succeeded;
     }
-
-
     #endregion
 
     #region MoreUserOptions

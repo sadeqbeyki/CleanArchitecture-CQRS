@@ -52,7 +52,8 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType(typeof(int))]
     public async Task<ActionResult> CreateAsync(CreateUserCommand command)
     {
-        return Ok(await _mediator.Send(command));
+        var result = await _mediator.Send(command);
+        return Ok(StatusCodes.Status201Created);
     }
 
     [HttpPut("[action]/{id}")]

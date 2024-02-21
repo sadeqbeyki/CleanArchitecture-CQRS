@@ -1,10 +1,11 @@
-﻿using Identity.Application.Features.Auth.Command;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Identity.Application.DTOs.Auth;
+﻿using Identity.Application.DTOs.Auth;
+using Identity.Application.Features.Auth.Command;
 using Identity.Application.Features.Auth.Query;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace EndPoint.Api.Controllers;
+namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -25,6 +26,7 @@ public class AuthController(IMediator mediator) : ControllerBase
 
     [HttpGet]
     [ProducesDefaultResponseType(typeof(JwtTokenDto))]
+    [Authorize]
     public async Task<IActionResult> RefreshToken()
     {
         var result = await _mediator.Send(new GetTokenQuery());

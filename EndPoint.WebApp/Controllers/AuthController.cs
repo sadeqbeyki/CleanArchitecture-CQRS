@@ -15,13 +15,11 @@ namespace EndPoint.WebApp.Controllers
     public class AuthController : Controller
     {
         private readonly IMediator _mediator;
-        private new readonly UserManager<ApplicationUser> _userManager;
 
 
-        public AuthController(IMediator mediatR, UserManager<ApplicationUser> userManager)
+        public AuthController(IMediator mediatR)
         {
             _mediator = mediatR;
-            _userManager = userManager;
         }
 
         public IActionResult Index()

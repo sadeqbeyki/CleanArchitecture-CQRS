@@ -3,27 +3,25 @@ using Identity.Application.Features.User.Queries;
 using Identity.Application.Interface;
 using MediatR;
 
-namespace Identity.Application.Features.User.QueryHandlers
+namespace Identity.Application.Features.User.QueryHandlers;
+
+public sealed class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<UserDetailsDto>>
 {
-    public sealed class GetAllUsersQueryHandler :
-        IRequestHandler<GetAllUsersQuery, List<UserDetailsDto>>
+    private readonly IIdentityService _identityService;
+
+    public GetAllUsersQueryHandler(IIdentityService identityService)
     {
-        private readonly IIdentityService _identityService;
+        _identityService = identityService;
+    }
 
-        public GetAllUsersQueryHandler(IIdentityService identityService)
+    public async Task<List<UserDetailsDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+    {
+        var users = await _identityService.GetAllUsersAsync(cancellationToken);
+
+        foreach (var user in users)
         {
-            _identityService = identityService;
+            user.Roles = await _identityService.GetUserRolesAsync(user.UserId);
         }
-
-        public async Task<List<UserDetailsDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
-        {
-            var users = await _identityService.GetAllUsersAsync(cancellationToken);
-
-            foreach (var user in users)
-            {
-                user.Roles = await _identityService.GetUserRolesAsync(user.UserId);
-            }
-            return users;
-        }
+        return users;
     }
 }

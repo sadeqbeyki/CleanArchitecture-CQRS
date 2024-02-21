@@ -1,22 +1,25 @@
-using Application;
-using Application.Mapper;
-using EndPoint.Api.Helper;
-using EndPoint.Api.Middlewares;
-using Identity.Application;
-using Identity.Application.Mapper;
-using Identity.Infrastructure;
-using Infrastructure;
 using Serilog;
+using Application;
+using WebAPI.Helper;
+using Infrastructure;
+using WebAPI.Middlewares;
+using Application.Mapper;
+using Identity.Application;
+using Identity.Infrastructure;
+using Identity.Application.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 builder.Services.AddControllers();
 
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 //_______________________________Call external API
 builder.Services.AddHttpClient();
 
-//builder.Services.AddHttpContextAccessor();
 
 #region DependencyInjection
 
@@ -30,7 +33,6 @@ builder.Services.AddStackExchangeRedisCache(redisOption =>
 });
 
 //log
-//Add support to logging with SERILOG
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
     );
@@ -48,16 +50,15 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentityApplication();
 builder.Services.AddIdentityInfrastructure(builder.Configuration);
 
-builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddCustomSwagger(builder.Configuration);
-builder.Services.AddCustomIdentity();
-builder.Services.AddCustomCors();//
-builder.Services.AddCustomLocalization();//
 builder.Services.AddAppSettings(builder.Configuration);
+builder.Services.AddCustomIdentity();
 builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AuthProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
+
+//builder.Services.AddCustomCors();
+//builder.Services.AddCustomLocalization();
 //Global Exception
 //builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 //builder.Services.AddProblemDetails();
@@ -65,34 +66,27 @@ builder.Services.AddAutoMapper(typeof(ShopProfile).Assembly);
 
 var app = builder.Build();
 
-
-#region CreateDbWhenDosentExist 
-//_____________________ Create Db When Dosent Exist
-app.CreateDatabase();
-app.CreateIdentityDatabase();
-
-app.SeedData();
-#endregion
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwaggerCustom(builder.Configuration);
+    //app.UseSwaggerCustom(builder.Configuration);
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseElmahIo();
+
+app.CustomSerilogLogging();
 
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
-app.AddCustomSerilogLogging();
-
 app.ConfigureLogExceptionMiddleware();
 
 app.UseRouting();
 
-app.UseCors("AllowAll");
+//app.UseCors("AllowAll");
 
 app.UseAuthentication();
 

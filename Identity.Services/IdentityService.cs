@@ -15,6 +15,7 @@ using ValidationException = System.ComponentModel.DataAnnotations.ValidationExce
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
 using Identity.Application.Helper;
+using Azure.Core;
 
 
 namespace Identity.Services;
@@ -364,35 +365,6 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
         return generatedToken;
     }
 
-    private async Task<JwtTokenDto> GenerateJWTAuthetication(ApplicationUser user)
-    {
-        List<Claim> claims =
-                            [
-                                new(JwtHeaderParameterNames.Jku, user.UserName),
-                                new(JwtHeaderParameterNames.Kid, Guid.NewGuid().ToString()), // hash
-                                new(ClaimTypes.NameIdentifier, user.UserName),
-                            ];
-
-        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtIssuerOptions:SecretKey"]));
-        var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);
-        var expires = DateTime.Now.AddHours(8);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["JwtIssuerOptions:Issuer"],
-            audience: _configuration["JwtIssuerOptions:Audience"],
-            claims,
-            expires: expires,
-            signingCredentials: signingCredentials
-        );
-
-        return new JwtTokenDto()
-        {
-            Token = new JwtSecurityTokenHandler().WriteToken(token),
-            ExpireOn = expires,
-            UserDetails = await GetUserDetailsAsync(user),
-        };
-    }
-
     public async Task<UserDetailsDto> GetUserDetailsAsync(ApplicationUser user)
     {
         if (user != null)
@@ -421,6 +393,46 @@ public class IdentityService : ServiceBase<IdentityService>, IIdentityService
     {
         var user = await _userManager.FindByIdAsync(id);
         return user ?? throw new NotFoundException("cant find user");
+    }
+
+    private async Task<JwtTokenDto> GenerateJWTAuthetication(ApplicationUser user)
+    {
+        var claims = await GetClaimsIdentity(user);
+
+        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtIssuerOptions:SecretKey"]));
+        var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);
+        var expires = DateTime.Now.AddHours(8);
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["JwtIssuerOptions:Issuer"],
+            audience: _configuration["JwtIssuerOptions:Audience"],
+            claims,
+            expires: expires,
+            signingCredentials: signingCredentials
+        );
+
+        return new JwtTokenDto()
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            ExpireOn = expires,
+            UserDetails = await GetUserDetailsAsync(user),
+        };
+    }
+
+    private async Task<IEnumerable<Claim>> GetClaimsIdentity(ApplicationUser user)
+    {
+        IList<string> rolesOfUser = await _userManager.GetRolesAsync(user);
+
+        var claims = new List<Claim>();
+        foreach (var role in rolesOfUser)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+        claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+        claims.Add(new(JwtHeaderParameterNames.Jku, user.UserName));
+        claims.Add(new(JwtHeaderParameterNames.Kid, Guid.NewGuid().ToString()));
+
+        return claims;
     }
     #endregion
 }

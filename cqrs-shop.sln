@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EndPoint.Api", "EndPoint.Api\EndPoint.Api.csproj", "{02A7AFB8-63E2-456B-858C-B8C3F19A1912}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{FC385BAC-C43D-4680-99B7-BA3BC253848A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{0B8B05C8-311D-440B-9901-9F5C21ABFDE7}"
@@ -53,17 +51,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{1158B7FB-5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blog.Domain", "Blog.Domain\Blog.Domain.csproj", "{6BAAF70E-F631-45E0-8077-BC1636099D69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.Application", "Blog.Application\Blog.Application.csproj", "{D637C8B6-229A-475C-9CE9-F0B1EBB60D3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blog.Application", "Blog.Application\Blog.Application.csproj", "{D637C8B6-229A-475C-9CE9-F0B1EBB60D3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{6239A26D-9672-40F0-B631-E107FF887709}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.Persistance", "Blog.Persistance\Blog.Persistance.csproj", "{7F18200D-4BB4-4805-960C-BCC0501DA0D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blog.Persistance", "Blog.Persistance\Blog.Persistance.csproj", "{7F18200D-4BB4-4805-960C-BCC0501DA0D8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{57AB2CAA-8E7E-45B2-93DD-5E8BFA37B193}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.EndPoint.api", "Blog.EndPoint.api\Blog.EndPoint.api.csproj", "{052F1829-062D-406D-92B0-94F2B70BE4BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blog.EndPoint.api", "Blog.EndPoint.api\Blog.EndPoint.api.csproj", "{052F1829-062D-406D-92B0-94F2B70BE4BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.Configurations", "Blog.Configurations\Blog.Configurations.csproj", "{EC7B3BE3-206C-4009-80A0-007AB050A1BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blog.Configurations", "Blog.Configurations\Blog.Configurations.csproj", "{EC7B3BE3-206C-4009-80A0-007AB050A1BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{F1AD4A61-B4FF-42EE-B256-56FE910245D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,10 +71,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{02A7AFB8-63E2-456B-858C-B8C3F19A1912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02A7AFB8-63E2-456B-858C-B8C3F19A1912}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{02A7AFB8-63E2-456B-858C-B8C3F19A1912}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02A7AFB8-63E2-456B-858C-B8C3F19A1912}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC385BAC-C43D-4680-99B7-BA3BC253848A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC385BAC-C43D-4680-99B7-BA3BC253848A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC385BAC-C43D-4680-99B7-BA3BC253848A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -143,12 +139,15 @@ Global
 		{EC7B3BE3-206C-4009-80A0-007AB050A1BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC7B3BE3-206C-4009-80A0-007AB050A1BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC7B3BE3-206C-4009-80A0-007AB050A1BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1AD4A61-B4FF-42EE-B256-56FE910245D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1AD4A61-B4FF-42EE-B256-56FE910245D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1AD4A61-B4FF-42EE-B256-56FE910245D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1AD4A61-B4FF-42EE-B256-56FE910245D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{02A7AFB8-63E2-456B-858C-B8C3F19A1912} = {B153F48C-7E0D-4BA5-B07C-6760B914CD2F}
 		{FC385BAC-C43D-4680-99B7-BA3BC253848A} = {67CBB7E4-67E4-460A-A6F2-F28B971BE904}
 		{0B8B05C8-311D-440B-9901-9F5C21ABFDE7} = {67CBB7E4-67E4-460A-A6F2-F28B971BE904}
 		{F33CA3B8-265D-48A5-AB7B-C7DBEC556944} = {5DA2A82A-19DD-49BA-8D0F-B6EBF464D9A6}
@@ -175,6 +174,7 @@ Global
 		{57AB2CAA-8E7E-45B2-93DD-5E8BFA37B193} = {98706311-9C85-4126-AFFE-7B3362A5FB22}
 		{052F1829-062D-406D-92B0-94F2B70BE4BB} = {57AB2CAA-8E7E-45B2-93DD-5E8BFA37B193}
 		{EC7B3BE3-206C-4009-80A0-007AB050A1BD} = {6239A26D-9672-40F0-B631-E107FF887709}
+		{F1AD4A61-B4FF-42EE-B256-56FE910245D0} = {10ED3DBD-80BC-4222-95A9-9CE7BC1C45C8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7DC3621-0F57-4A11-936F-1020B4D71BB0}

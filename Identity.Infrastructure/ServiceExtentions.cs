@@ -41,7 +41,6 @@ public static class SeedDataExtention
 {
     private static readonly string[] Roles = new string[] { "Admin", "Manager", "Member" };
 
-
     public static async Task Initialize(IServiceProvider serviceProvider)
     {
         using var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();

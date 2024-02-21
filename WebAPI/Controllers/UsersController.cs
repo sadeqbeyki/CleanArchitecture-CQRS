@@ -3,18 +3,16 @@ using Identity.Application.DTOs;
 using Identity.Application.Features.User.Commands;
 using Identity.Application.Features.User.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace EndPoint.Api.Controllers;
+namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(Roles = "Admin, Manager")]
 //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Authorize]
+[Authorize(Roles = "Admin, Manager")]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -37,8 +35,6 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
     public async Task<IActionResult> GetAsync(string id)
     {
-        var used = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         var result = await _mediator.Send(new GetUserDetailsQuery(id));
         return Ok(result);
     }
@@ -47,8 +43,6 @@ public class UsersController : ControllerBase
     [ProducesDefaultResponseType(typeof(UserDetailsDto))]
     public async Task<IActionResult> GetByUserName(string userName)
     {
-        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         var result = await _mediator.Send(new GetUserByUserNameQuery(userName));
         return Ok(result);
     }
